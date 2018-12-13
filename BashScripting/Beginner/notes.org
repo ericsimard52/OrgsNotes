@@ -104,19 +104,28 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    Double quote Preserves (from interpretation) most special characters
    Single quote preseves all special characters
 
-   In this example, we demonstrate the difference between "" and '' with the ls command.
+   In this example, we demonstrate the difference between no quotes and "" with the ls command.
    #+BEGIN_SRC bash :results output :exports code :tangle declareFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
      # In this example, sy* will be expanded and display all file starting with sy
-     ls -l "/var/log/sy*"
+     ls -l /var/log/sy*
 
      # In this case, we are looking for a file named sy*
-     ls -l '/var/log/sy*'
+     ls -l "/var/log/sy*"
    #+END_SRC
 
    #+RESULTS:
+   : -rw-r----- 1 syslog adm 138535 Dec 13 14:34 /var/log/syslog
+   : -rw-r----- 1 syslog adm 165700 Dec 13 00:07 /var/log/syslog.1
+   : -rw-r----- 1 syslog adm  10253 Dec 12 00:06 /var/log/syslog.2.gz
+   : -rw-r----- 1 syslog adm  44537 Dec 11 00:06 /var/log/syslog.3.gz
+   : -rw-r----- 1 syslog adm   4109 Dec 10 00:08 /var/log/syslog.4.gz
+   : -rw-r----- 1 syslog adm   3860 Dec  9 00:07 /var/log/syslog.5.gz
+   : -rw-r----- 1 syslog adm   6842 Dec  8 00:05 /var/log/syslog.6.gz
+   : -rw-r----- 1 syslog adm   7931 Dec  7 00:08 /var/log/syslog.7.gz
+   : ls: cannot access '/var/log/sy*': No such file or directory
 
-   Here we demonstrate the same thing using a variable.
+   Here we demonstrate we demonstrate the difference between "" and '' with the ls command.
    #+BEGIN_SRC bash :shebang :results output :exports code :tangle declareFunc.sh :tangle-mode (identity #o0755)
      var="hello"
      echo $var
@@ -125,14 +134,22 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 
    #+END_SRC
-
+   
    #+RESULTS:
+   : hello
+   : hello
+   : $var
 
 
 * Variable & function
    Bash variable are untype. Basically all variable are char strings. But when it contains only digit, bash allow arithmetic operation.
    Example:
-   #+BEGIN_SRC bash :results output :exports code :tangle var.sh :tangle-mode (identity #o0755)
+   :README:
+   To edit a code block press C-' while your cursor is inside or on the header/footer of a src block.
+   A new buffer will open with the content of the block.
+   Instruction will be provided on top of new buffer on how to save and exit or cancel and exit.
+   :END:
+   #+BEGIN_SRC bash :results output :exports code :tangle var.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      declare a # Good habit but not required.
@@ -155,13 +172,20 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      ((c=$a+2))
      echo $c
 
-     # b is a string, but no error will come of this.
+     # b is a string, Bash will complain
      ((d=$b+3))
      echo $d
    #+END_SRC
 
    #+RESULTS:
-
+   : hello
+   : 2
+   : 4
+   : bye!
+   : 6
+   : /tmp/babel-16833Kcr/sh-script-168331gD: line 25: ((: d=bye!+3: syntax error in expression (error token is "!+3")
+   : 0
+ 
 ** Functions
    Declaring function and passing parameters
    Functions are declare with the function keyword. Example: function myFunc1
@@ -205,6 +229,14 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : Hello you have called myFunction
+   : You have not given me a paramter.
+   : Hello you have called myFunction
+   : I got Hello.
+   : Hello you have called myFunc
+   : You have not given me a paramter.
+   : Hello you have called myFunc
+   : I got Hello.
 
 
    Functions can return integer only. Attempt to return otherwise results in error.
@@ -265,6 +297,20 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   #+begin_example
+   Hello you have called myFunction
+   Error, you have not given me a paramter.
+   Error, function returned 1.
+   Hello you have called myFunction
+   I got Hello.
+   Success, function returned 0.
+   Hello you have called myFunc
+   Error: you have not given me a paramter.
+   Error, function returned 1.
+   Hello you have called myFunc
+   I got Hello.
+   Success, function returned 0.
+   #+end_example
 
    So what if I need to return a string.
    In a sense you can pass a variable by reference and modify that variable inside a function.
@@ -282,6 +328,8 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : hello
+   : Hello world
 
    Functions cannot be empty
    #+BEGIN_SRC bash :results output :export code :tangle emptyFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
@@ -333,7 +381,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
      #+RESULTS:
      : roVar: 2
-     : /tmp/babel-85469c-/sh-script-8546pgo: line 5: roVar: readonly variable
+     : /tmp/babel-16833Kcr/sh-script-16833d5o: line 5: roVar: readonly variable
      : roVar: 2
 
 **** -i integer
@@ -344,13 +392,17 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      declare -i myInt
      myInt=2
      echo $myInt
-     myInt="I am a string." # Bash will complain, myInt=0. Same behavior with single quote.
+     myInt="I am a string." # Bash will complain, myInt=2. Same behavior with single quote.
      echo $myInt
      myInt="Hello" # Bash does not complain, myInt=0. Same behavior with single quote.
      echo $myInt
      #+END_SRC
 
      #+RESULTS:
+     : 2
+     : /tmp/babel-16833Kcr/sh-script-168333N1: line 6: I am a string.: syntax error: invalid arithmetic operator (error token is ".")
+     : 2
+     : 0
 
 **** -a array
      Declare an array
@@ -383,6 +435,18 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     #+begin_example
+     1
+     2
+     3
+     4
+     5
+     Sum: 11
+     Sum: 12
+     Sum: 13
+     Sum: 14
+     Sum: 15
+     #+end_example
 
 **** -f function
      declare -f without arguments does a listing of all function previously defined in that script.
@@ -417,6 +481,23 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     #+begin_example
+     You have called myFunc1
+     You have called myFunc2
+     You have called myFunc3
+     myFunc1 () 
+     { 
+         echo "You have called myFunc1"
+     }
+     myFunc2 () 
+     { 
+         echo "You have called myFunc2"
+     }
+     myFunc3 () 
+     { 
+         echo "You have called myFunc3"
+     }
+     #+end_example
 
 **** -x export
      - Note taken on [2018-12-11 Tue 11:10] \\
