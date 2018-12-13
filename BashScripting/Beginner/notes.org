@@ -1,0 +1,1677 @@
+This file was created in Emacs with org-mode installed.
+To have full functionality, please install Emacs with your package manager and see HOW_TO_INSTALL_ORG_MODE
+Refer to the video 14 in the following class if needed: https://www.skillshare.com/classes/The-Free-Linux-Bin/1454905790 
+
+:HOW_TO_INSTALL_ORG_MODE:
+Pressing TAB on the above line should fold the content, if not ORG is not installed.
+
+  Make sure the following code is present and at the top of your ~/.emacs file
+  #+BEGIN_CODE
+(package-initialize)
+;; load emacs 24's package system. Add MELPA repository.
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (add-to-list
+   'package-archives
+   ;; 1 of the 2 next line needs to be there.
+   ;;'("melpa" . "http://stable.melpa.org/packages/")
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   )
+  (add-to-list 'package-archives    '("org" . "https://orgmode.org/elpa") t)
+  )
+
+  #+END_CODE
+
+  Restart emacs
+
+  Press M-x package-list-packages
+  scroll down to org
+  While on that line, press i then press x
+  Confirm that you want to install
+
+  Restart Emacs to be sure and the file will look way better.
+:END:
+
+:README:
+How to operate org files.
+Lines starting with 1 or more * are headers, press TAB while on a header, you will cycle its visibility.
+
+src code block are contained within #+BEGIN_SRC and #+END_SRC, pressing TAB on either of those line will cycle its visiblity
+You can evaluate the code within emac with the following:
+C-c C-c within a code block will evaluate and display the results when possible.
+
+You can export any code with the following:
+C-c C-v t export all code block
+C-u C-c C-v t export current code block (Where cursor is located)
+
+Code block are export with the filename given in header :tangle. They are exported and are executable ready to use.
+
+To edit a code block press C-' while your cursor is inside or on the header/footer of a src block.
+A new buffer will open with the content of the block.
+Instruction will be provided on top of new buffer on how to save and exit or cancel and exit.
+
+
+I strongly recommend that you play with all code block. Modify them, run them, break them.
+If you are not comfortable with org mode and prefer to use your text editor, export all code right now, no matter where your cursor is and hack away in comfort.
+I also recommend you make copies of the original src block before changing it.
+You can copy the whole code block when it is folded by placing the cursor at the begining of the line and press M-w (M = META, usually ALT)
+M-w copies the line and press C-y to paste it.
+Change the filename value assigned to :tangle and your code will be exported when requested.
+
+Last important rule, when you see a README, Read it!
+:END:
+
+Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index.html
+
+
+* Special char
+  http://tldp.org/LDP/abs/html/special-chars.html
+** Comments #
+***  A line beginning with # is a comment
+    #+BEGIN_SRC sh
+
+      # this is a comment, this script does nothing!
+
+    #+END_SRC
+***  Comments can follow the end of a command
+    #+BEGIN_SRC sh
+       echo "There is a comment at the end of this line" # This is my comment
+       #                                                ^ Note whitespace before
+
+    #+END_SRC
+***  Comment can also be embedded within a pipe
+    #+BEGIN_SRC bash
+      cat /var/log/syslog | grep "systemd" |
+          # this is a comment embeded within a pipe
+          wc -l
+    #+END_SRC
+
+    #+RESULTS:
+    : 61
+
+** Command separator ;
+   Allows for more the 1 command on the same line.
+   #+BEGIN_SRC bash
+     echo "hello"; echo "there."
+   #+END_SRC
+
+   #+RESULTS:
+   | hello  |
+   | there. |
+
+** Quoting double quote VS single quote
+
+   Double quote Preserves (from interpretation) most special characters
+   Single quote preseves all special characters
+
+   In this example, we demonstrate the difference between "" and '' with the ls command.
+   #+BEGIN_SRC bash :results output :exports code :tangle declareFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+     # In this example, sy* will be expanded and display all file starting with sy
+     ls -l "/var/log/sy*"
+
+     # In this case, we are looking for a file named sy*
+     ls -l '/var/log/sy*'
+   #+END_SRC
+
+   #+RESULTS:
+
+   Here we demonstrate the same thing using a variable.
+   #+BEGIN_SRC bash :shebang :results output :exports code :tangle declareFunc.sh :tangle-mode (identity #o0755)
+     var="hello"
+     echo $var
+     echo "$var"
+     echo '$var'
+
+
+   #+END_SRC
+
+   #+RESULTS:
+
+
+* Variable & function
+   Bash variable are untype. Basically all variable are char strings. But when it contains only digit, bash allow arithmetic operation.
+   Example:
+   #+BEGIN_SRC bash :results output :exports code :tangle var.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     declare a # Good habit but not required.
+
+     a="hello" # a is a string
+     # b is a int but under the hood, this is just a char which bash will allow arithmetic operation on it.
+     b=2
+     echo $a
+     echo $b
+
+     ## Because it all is a char string, this is possible
+     ## now a can have arithmetic operation and not b
+     a=4
+     b="bye!"
+     echo $a
+     echo $b
+
+     # Arithmetic operation needs to be contained within (( ))
+     # c does not have to exists before now.
+     ((c=$a+2))
+     echo $c
+
+     # b is a string, but no error will come of this.
+     ((d=$b+3))
+     echo $d
+   #+END_SRC
+
+   #+RESULTS:
+
+** Functions
+   Declaring function and passing parameters
+   Functions are declare with the function keyword. Example: function myFunc1
+   After the function name, a space is required.
+   Then you can proceed with opening the function's scope: function myFunc1 { ... }
+   You are allowed to place () between function name and { ... } like so: function myFunc1 () { ... }
+   But nothing is allowed inside ()
+   #+BEGIN_SRC bash :results output :export code :tangle func.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     function myFunction { # note the space
+         #              ^ myFunction{ will cause an error
+         echo "Hello you have called myFunction"
+
+         ## Function parameters are not declared
+         if [ -z "$1" ]; then #is param 1 zero length?
+             echo "You have not given me a paramter."
+         else
+             echo "I got $1."
+         fi
+     }
+
+     # Function can also be declared like this:
+     # But no arguments within ()
+     function myFunc () {
+         echo "Hello you have called myFunc"
+
+         ## Function parameters are not declared
+         if [ -z "$1" ]; then #is param 1 zero length?
+             echo "You have not given me a paramter."
+         else
+             echo "I got $1."
+         fi
+     }
+
+     ## Calling functions
+     myFunction
+     myFunction "Hello"
+     myFunc
+     myFunc "Hello"
+   #+END_SRC
+
+   #+RESULTS:
+
+
+   Functions can return integer only. Attempt to return otherwise results in error.
+   #+BEGIN_SRC bash :results output :export code :tangle funcReturn.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     function myFunction { # note the space
+         #              ^ myFunction{ will cause an error
+         echo "Hello you have called myFunction"
+
+         ## Function parameters are not declared
+         if [ -z "$1" ]; then #is param 1 zero length?
+             echo "Error, you have not given me a paramter."
+             return 1
+         else
+             echo "I got $1."
+             return 0
+         fi
+     }
+
+     # Function can also be declared like this:
+     function myFunc () {
+         echo "Hello you have called myFunc"
+
+         ## Function parameters are not declared
+         if [ -z "$1" ]; then #is param 1 zero length?
+             echo "Error: you have not given me a paramter."
+             return 1
+         else
+             echo "I got $1."
+             return 0
+         fi
+     }
+
+     function checkRetVal {
+         if [[ "$1" > 0 ]]; then
+             # Usualy a value of 0 = success >0=error.
+             echo "Error, function returned 1."
+         else
+             echo "Success, function returned 0."
+         fi
+     }
+     ## Calling functions
+     myFunction
+
+     # Return value is stored in $?
+     # Check the return value of last ran command, in this case value return by functions.
+     checkRetVal $?
+
+     myFunction "Hello"
+     checkRetVal $?
+
+     myFunc
+     checkRetVal $?
+
+     myFunc "Hello"
+     checkRetVal $?
+   #+END_SRC
+
+   #+RESULTS:
+
+   So what if I need to return a string.
+   In a sense you can pass a variable by reference and modify that variable inside a function.
+   #+BEGIN_SRC bash :results output :export code :tangle funcRefVar.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     declare var
+     function refVar {
+         eval "$1='Hello world'" # $var now = Hellow World
+     }
+     var="hello"
+     echo $var
+     refVar var # Notive I do not pass $var, just var.
+     echo $var
+   #+END_SRC
+
+   #+RESULTS:
+
+   Functions cannot be empty
+   #+BEGIN_SRC bash :results output :export code :tangle emptyFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+
+     ## This will prevent execution
+     function func1 { 
+    
+     }
+
+     ## Function with comment only are still empty
+     function func2 {
+         # My comment
+         ## Even multiple line
+         ### This will blowup.
+     }
+
+
+     # Need to create an empty function?
+     # The closest you could come to it is this:
+     function iLookEmpty {
+         echo 1 > /dev/null
+     }
+   #+END_SRC
+
+   #+RESULTS:
+
+** Declare or typeset
+   http://tldp.org/LDP/abs/html/declareref.html
+
+   Declare or typeset both exact same.
+   Declare is specific to version 2 of bash.
+   Typeset work on ksh
+
+*** Options & examples
+
+**** -r readonly
+     Rough equivalent to C const type.
+     Attempt to change the value results in error.
+     Notice the :cmdline 2>&1. This redirect stderr into stdout and is considered normal output by org.
+     This results in error message being displayed in the results section.
+     #+BEGIN_SRC bash :results output :exports code :tangle roVar.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+       #!/bin/bash
+       declare -r roVar=2
+       echo "roVar: $roVar"
+       roVar=4 # Illegal attempt to change roVar
+       echo "roVar: $roVar"
+
+     #+END_SRC
+     #+RESULTS:
+     : roVar: 2
+     : /tmp/babel-85469c-/sh-script-8546pgo: line 5: roVar: readonly variable
+     : roVar: 2
+
+**** -i integer
+     Declare variable as integer, attempt to assign a string can result in error
+
+     #+BEGIN_SRC bash :results output :exports code :tangle intVar.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+     declare -i myInt
+     myInt=2
+     echo $myInt
+     myInt="I am a string." # Bash will complain, myInt=0. Same behavior with single quote.
+     echo $myInt
+     myInt="Hello" # Bash does not complain, myInt=0. Same behavior with single quote.
+     echo $myInt
+     #+END_SRC
+
+     #+RESULTS:
+
+**** -a array
+     Declare an array
+     #+BEGIN_SRC bash :results output :exports code :tangle arr.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+       declare -a myArray
+       myArray=(1 2 3 4 5) # This is an array
+
+       ## One way to loop through an array
+       for m in ${myArray[@]}; do
+           echo $m
+       done
+
+       ## Here is another.
+       x=0
+       arrLen=${#myArray[@]} # This is how you get the length of an array
+
+       ## Note the double  [[]]
+       while [[ $x < $arrLen ]]; do
+           ###
+           # Mathematical operation in Bash scripting needs (())
+           # sum=((3+4))
+           ###
+           val=${myArray[$x]} ## This is how you refer to a item in the array
+           sum=$(($val + 10))
+           echo "Sum: $sum"
+           ((x++))
+       done
+
+     #+END_SRC
+
+     #+RESULTS:
+
+**** -f function
+     declare -f without arguments does a listing of all function previously defined in that script.
+     #+BEGIN_SRC bash :results output :exports code :tangle declareFunc.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+
+       declare -f myFunc2
+       declare myFunc3 # This works too.
+
+       # Function do not need to be declared first.
+       function myFunc1 { # Note the space ..nc1 {
+           echo "You have called myFunc1"
+       }
+
+
+
+       function myFunc2 {
+           echo "You have called myFunc2"
+       }
+
+       function myFunc3 {
+           echo "You have called myFunc3"
+       }
+
+
+
+       # There is no main function in bash, this is it.
+       myFunc1
+       myFunc2
+       myFunc3
+       declare -f
+     #+END_SRC
+
+     #+RESULTS:
+
+**** -x export
+     - Note taken on [2018-12-11 Tue 11:10] \\
+       This will be easier to explain when we have a better understanding of bash environment and export, it will be covered in a later class.
+
+     Declare a var as available for exporting outside the env of the script
+
+**** by itself
+     When called without argument, declare will list the previously declared functions.
+     #+BEGIN_SRC bash :results output :exports code :tangle declareNoArg.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     declare -f myFunc2
+     declare myFunc3 # This works too.
+
+     # Function do not need to be declared first.
+     function myFunc1 { # Note the space ..nc1 {
+         echo "You have called myFunc1"
+     }
+
+
+
+     function myFunc2 {
+         echo "You have called myFunc2"
+     }
+
+     function myFunc3 {
+         echo "You have called myFunc3"
+     }
+
+
+
+     # There is no main in bash, this is it.
+     myFunc1
+     myFunc2
+     myFunc3
+     declare -f
+     #+END_SRC
+
+
+* Conditional statement
+** If statement
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
+*** Structure
+    #+BEGIN_SRC bash  bash :results output :exports none
+      ## Space are important
+
+      if ...; then ... ; fi # One line
+
+
+      if ..; then # Bracket are not always required, but a good habit.
+          ...
+      fi
+
+      if [ ... ]; then # Single bracket mode
+          ...
+      fi
+
+      if [[ ... ]]; then # Double brackets, will be explained further.
+          ...
+      fi
+
+      ## Else
+
+      if ... ; then
+          ...
+      else
+          ...
+      fi
+
+      ## Else if
+
+      if ... ; then
+          ..
+      elif ... ; then
+          ...
+      elif ... ; then
+          ...
+      else
+          ...
+      fi
+
+
+    #+END_SRC
+**** [] VS [[]]
+     Source: http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_02.html
+     Contrary to [, [[ prevents word splitting of variable values. So, if VAR="var with spaces", you do not need to double quote $VAR in a test - eventhough using quotes remains a good habit. 
+     Also, [[ prevents pathname expansion, so literal strings with wildcards do not try to expand to filenames. 
+     Using [[, == and != interpret strings to the right as shell glob patterns to be matched against the value to the left, for instance: [[ "value" == val* ]].
+     #+BEGIN_SRC bash :results output :exports code :tangle singleDoubleBrackets.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+
+       var1="Hello worlds!"
+       var2="Hello worlds!"
+
+
+       echo '$var1=>'$var1
+       echo '$var2=>'$var2
+
+       echo -n 'Test: [ "$var1" = "$var2" ] => ' # echo -n does not return at the end, leaving the cursor in place
+       if [ "$var1" = "$var2" ] ; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [ $var1 = $var2 ] => '
+       if [ $var1 = $var2 ]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [[ "$var1" = "$var2" ]] => '
+       if [[ "$var1" = "$var2" ]]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [[ $var1 = $var2 ]] => '
+       if [[ $var1 = $var2 ]]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [ "$var1" == "$var2" ] => '
+       if [ "$var1" == "$var2" ]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [ $var1 == $var2 ] => '
+       if [ $var1 == $var2 ]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [[ "$var1" == "$var2" ]] => '
+       if [[ "$var1" == "$var2" ]]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+
+       echo -n 'Test: [[ $var1 == $var2 ]] => '
+       if [[ $var1 == $var2 ]]; then
+           echo "var1 and var2 are equals"
+       else
+           echo "var1 and var2 are NOT equals"
+       fi
+     #+END_SRC
+
+     #+RESULTS:
+
+*** Test on files
+    For a full list, refer to link above. But here are a few test related to files that can be done with the if statement.
+    #+BEGIN_SRC  bash :results output :exports code :tangle ifFileTest.sh :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      # Test if file exits
+      file=/var/log/syslog
+      if [ -a $file ]; then # Note the space [ ... ]
+          echo "$file exists."
+      else
+          echo "$file does not exists."
+      fi
+
+      # Negative test
+      file=/var/log/sysll # This file does not exists
+      if [ ! -a $file ]; then
+          echo "$file does not exists."
+      elif [ -a $file ]; then
+          echo "$file does exists."
+      fi
+
+      file=/var/log/syslog
+
+      if [ -f $file ]; then # True if file exists AND is a regular file
+          echo "$file is a regular file"
+      fi
+
+      if [ ! -d $file ]; then # True if file exists AND is a directory
+          echo "$file is NOT a directory"
+      fi
+    #+END_SRC
+
+
+    #+RESULTS:
+    : /var/log/syslog exists.
+    : /var/log/sysll does not exists.
+    : /var/log/syslog is a regular file
+    : /var/log/syslog is NOT a directory
+
+*** Comparison
+    Source: https://www.tldp.org/LDP/abs/html/comparison-ops.html
+
+**** Bash specific operators
+     Here we look at bash specific operator, instead of >, we use -gt
+     Interger comparison with single bracket 
+     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      # Integer comparison
+      a=1
+      b=1
+      c=2
+
+      echo '$a => '$a
+      echo '$b => '$b
+      echo '$c => '$c
+
+      if [ $a -eq $b ]; then
+          echo '[ $a -eq $b ] => TRUE'
+      else
+          echo '[ $a -eq $b ] => FALSE'
+      fi
+
+      if [ "$a" -ne "$b" ]; then
+          echo '[ "$a" -ne "$b" ] => TRUE'
+      else
+          echo '[ "$a" -ne "$b" ] => FALSE'
+      fi
+
+      if [ $a -gt $c ]; then
+          echo '[ $a -gt $c ] => TRUE'
+      else
+          echo '[ $a -gt $c ] => TRUE'
+      fi
+
+      if [ "$a" -ge "$b" ]; then
+          echo '[ "$a" -ge "$b" ] => TRUE'
+      else
+          echo '[ "$a" -ge "$b" ] => FALSE'
+      fi
+
+      if [ $c -lt $b ]; then
+          echo '[ $c -lt $b ] => TRUE'
+      else
+          echo '[ $c -lt $b ] => FALSE'
+      fi
+
+      if [ "$a" -le "$c" ]; then
+          echo '[ "$a" -le "$c" ] => TRUE'
+      else
+          echo '[ "$a" -le "$c" ] => FALSE'
+      fi
+
+      a="hello"
+      b="hello"
+
+      # This does not throw an error, by will equal false.
+      # Those comparison operator are for integers.
+      if [ $a -eq $b ]; then
+          echo '$a = $b'
+      else
+          echo '$a != $b'
+      fi
+    #+END_SRC
+
+     #+RESULTS:
+
+     Interger comparison with double bracket
+     :SPOILER:
+    Works the same.
+    :END:
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      # Integer comparison
+      a=1
+      b=1
+      c=2
+      if [[ $a -eq $b ]]; then
+          echo '$a = $b'
+      else
+          echo '$a != $b'
+      fi
+
+      if [[ "$a" -ne "$b" ]]; then
+          echo '$a != $b'
+      else
+          echo '$a = $b'
+      fi
+
+      if [[ $a -gt $c ]]; then
+          echo '$a > $c'
+      else
+          echo '$a < $c'
+      fi
+
+      if [[ "$a" -ge "$b" ]]; then
+          echo '$a >= $b'
+      else
+          echo '$a <= $b'
+      fi
+
+      if [[ $c -lt $b ]]; then
+          echo '$c < $b'
+      else
+          echo '$c > $b'
+      fi
+
+      if [[ "$a" -le "$c" ]]; then
+          echo '$a <= $b'
+      else
+          echo '$a >= $b'
+      fi
+
+      a="hello"
+      b="hello1"
+
+      # This does not throw an error and in this case it evals to true.
+      # Do not use these operator for string comparison
+      if [[ $a -eq $b ]]; then
+          echo '$a = $b'
+      else
+          echo '$a != $b'
+      fi
+    #+END_SRC
+
+     #+RESULTS:
+
+**** More common way to test
+     Interger comparison with single bracket
+     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+
+       # Integer comparison
+       a=1
+       b=1
+       c=2
+       if [ $a = $b ]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
+
+       if [ $a == $b ]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
+
+       if [ "$a" != "$b" ]; then
+           echo '$a != $b'
+       else
+           echo '$a = $b'
+       fi
+
+       if [ ! "$a" = "$b" ]; then
+           echo '! $a = $b'
+       else
+           echo '$a = $b'
+       fi
+
+       if [ $a > $c ]; then
+           echo '$a > $c'
+       else
+           echo '$a < $c'
+       fi
+
+       if [ $c < $b ]; then
+           echo '$c < $b'
+       else
+           echo '$c > $b'
+       fi
+
+       ## Take note of those last ones.
+
+       if [ "$a" >= "$b" ]; then
+           echo '$a >= $b'
+       else
+           echo '$a <= $b'
+       fi
+
+       if [ "$a" <= "$c" ]; then
+           echo '$a <= $b'
+       else
+           echo '$a >= $b'
+       fi
+    #+END_SRC
+
+     #+RESULTS:
+
+     Interger comparison with double bracket
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+
+       # Integer comparison
+       a=1
+       b=1
+       c=2
+       if [[ $a = $b ]]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
+
+       if [[ $a == $b ]]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
+
+       if [[ "$a" != "$b" ]]; then
+           echo '$a != $b'
+       else
+           echo '$a = $b'
+       fi
+
+       if [[ ! "$a" = "$b" ]]; then
+           echo '$a != $b'
+       else
+           echo '$a = $b'
+       fi
+
+       if [[ $a > $c ]]; then
+           echo '$a > $c'
+       else
+           echo '$a < $c'
+       fi
+
+
+       if [[ $c < $b ]]; then
+           echo '$c < $b'
+       else
+           echo '$c > $b'
+       fi
+
+       # See anything missing?
+    #+END_SRC
+
+     #+RESULTS:
+
+     What about <=  and >= ?
+     They work slightly different.
+     Note that previous operator : > < can also be used the same way
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparisonCont.sh :tangle-mode (identity #o0755)
+       #!/bin/bash
+
+       # Integer comparison
+       a=1
+       b=1
+       c=2
+
+       ## Does not work with [[ ... ]]
+       if (( $a >= $c )); then
+           echo '$a >= $c'
+       else
+           echo '$a <= $c'
+       fi
+
+
+       if (( $c <= $b )); then
+           echo '$c <= $b'
+       else
+           echo '$c >= $b'
+       fi
+
+
+    #+END_SRC
+
+     #+RESULTS:
+
+**** String Comparison
+      Compare to see if 2 strings are equal:
+      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755)
+        #!/bin/bash
+
+        str1="Hello"
+        str2="Hello"
+        str3="Hello world!"
+        str5="abcdef"
+        str6="abcdea"
+
+        if [ $str1 = $str2 ]; then # Note the spaces [ ... = ... ];
+            echo '$str1: '$str1' = $str2: '$str2
+        fi
+
+        if [ $str1 == $str2 ]; then
+            echo '$str1: '$str1' = $str2: '$str2
+        fi
+
+        if [ "$str1" = "$str2" ]; then
+            echo '$str1: '$str1' = $str2: '$str2
+        fi
+
+        if [ "$str1" == "$str2" ]; then
+            echo '$str1: '$str1' = $str2: '$str2
+        fi
+
+        if [ "$str1" != "$str3" ]; then
+            echo '$str1: '$str1' != $str2: '$str2
+        fi
+
+        if [ ! "$str1" = "$str3" ]; then
+            echo '$str1: '$str1' != $str2: '$str2
+        fi
+
+
+        ### Operator < > refer to alphabetical order
+
+        if [[ $str5 > $str6 ]]; then # note double [[ ]]
+            echo '$str5: '$str5' > $str6: '$str6
+            echo "It is greater then (Comes later) in alphabetical order"
+        fi
+
+        if [[ $str6 < $str5 ]]; then
+            echo '$str6: '$str6' < $str5: '$str5
+        fi
+
+        if [ $str5 \> $str6 ]; then # Escape > or < when using single []
+            echo '$str5: '$str5' > $str6: '$str6
+        fi
+
+      #+END_SRC
+
+      #+RESULTS:
+
+
+      Checking if a string is null or not null -z -n
+
+      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755)
+        #!/bin/bash
+
+        str=""
+        declare str2
+        if [ -z $str ]; then
+            echo '$str is null'
+        fi
+        if [ -z $str2 ]; then
+            echo '$str2 is null'
+        fi
+        if [ -z $str3 ]; then
+            echo '$str3 is null, it is not even declared.'
+        fi
+
+        str="hello"
+
+        if [ -n $str ]; then
+            echo "Now str is not null: $str"
+        fi
+      #+END_SRC
+
+      #+RESULTS:
+
+** Case statement
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_03.html
+   Yes case statement works with strings.
+   Structure
+   #+BEGIN_SRC bash :results output :export none
+
+      case EXPR in
+          opt1)
+              ...
+              ...
+              ;;
+          opt2)
+              ...
+              ;;
+      esac
+    #+END_SRC
+
+   Here is a simple example:
+   :README:
+      Due to user input this script will not run properly in evaluation mode.
+      Export the code section with C-u C-c C-v t
+      Then proceed to execute simpleCase.sh
+    :END:
+   #+BEGIN_SRC bash :results output :export code :tangle simpleCase.sh  :tangle-mode (identity #o0755)
+     #!/bin/bash
+     echo -n "Press a number between 0 - 9 or 567 or anything else or 76."
+     read val # Reads user input and store in $val. More on read later.
+
+     case $val in
+         1)
+             echo "You pressed 1."
+             ;;
+         2)
+             echo "You pressed 2."
+             ;;
+         3)
+             echo "You pressed 3."
+             ;;
+         4)
+             echo "You pressed 4"
+             ;;
+         [567])
+             echo "You pressed 5 6 or 7"
+             ;;
+         8|9|0)
+             echo "You pressed 8 9 or 0"
+             ;;
+         567)
+             echo "You pressed 567"
+             ;;
+         ,*)
+             echo "Not what I asked for"
+             ;;
+         76)
+             echo "This will never be reached. Or anything after it."
+             ;;
+     esac
+    #+END_SRC
+
+
+* Loops
+** For loop
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_01.html
+
+   Example: Loop through an array
+   #+BEGIN_SRC bash :results output :export code :tangle forLoop.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     declare -a myArray=(1 2 4 3 5 6 7)
+
+     for item in ${myArray[@]}; do
+         echo $item
+     done
+   #+END_SRC
+
+   #+RESULTS:
+
+   Example: Loop through arguments supply on the command line.
+   #+BEGIN_SRC bash :results output :export code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3
+     #!/bin/bash
+
+     argsLen=${#@}
+     if [ $argsLen = 0 ]; then
+         echo "Supply a serie of arguments."
+         exit 1
+     fi
+     echo "Arguments length: $argsLen"
+     for arg in ${@}; do
+         echo $arg
+     done
+   #+END_SRC
+
+   #+RESULTS:
+
+** While loop
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
+
+   Example: Loop through an array
+   #+BEGIN_SRC bash :results output :export code :tangle whileLoop.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     declare -a myArray=(1 2 4 3 5 6 7)
+
+     x=0
+     arrLen=${#myArray[@]}
+     echo "arrLen: $arrLen"
+
+     while [[ $x < $arrLen ]]; do
+         echo ${myArray[$x]}
+         ((x++))
+     done
+
+     # Same loop, but using single [] and bash operator -lt
+     x=0
+     while [ $x -lt $arrLen ]; do
+         echo ${myArray[$x]}
+         ((x++))
+     done
+   #+END_SRC
+
+   #+RESULTS:
+
+** until loop
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_03.html
+
+   Until loop is very similar to while except that it execute until the test resolves true.
+   #+BEGIN_SRC bash :results output :export code :tangle untilLoop.sh :tangle-mode (identity #o0755)
+     #!/bin/bash
+
+     myArray=(1 2 3 4 5 6 7 8 9 0)
+     arrLen=${#myArray[@]}
+     x=0
+     until [[ $x = $arrLen ]]; do
+         echo ${myArray[$x]}
+         ((x++))
+     done
+   #+END_SRC
+
+   #+RESULTS:
+
+** IO redirection and loop
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_04.html
+*** Input redirection
+    Another way to control a loop is by specifying a file to read the input from. Usually the command read is used for this.
+    As long as input are fed into the loop, it continues, when it stop coming in, the loop quits.
+    This allow for some pretty nifty scripts, when you combine this knowledge with a good understanding of files type, file descriptor and sockets,
+    you can control a loop by feeding data from a file on a remote computer for example.
+
+    :README:
+    Press C-c C-c on the #+BEGIN_SRC.
+    Help for the read command will display in #+RESULTS:
+    :END:
+    #+NAME helpRead
+    #+BEGIN_SRC bash :results output :export none :tangle no :epiloge "read --help"
+    #!/bin/bash
+    cat - < <(read --help)
+    #+END_SRC
+
+    #+RESULTS:
+
+    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      # First lets create a file with multiple lines of content.
+      # This command is risk free, running find on the root folder as normal user will generate stdout and stderr.
+      destFile=/tmp/tmpFile # change if you wish.
+      touch $destFile #Create the file.
+      lineCount=0
+      # I redirect the output into a file
+      find / -name sys* > $destFile
+
+      # Now read the file and print each line,
+      # -r, If there are \, do not allow it to escape any character
+      while read -r line; do
+          ((lineCount++))
+      done < $destFile # Input redirection.
+      echo "I got $lineCount lines in $destFile"
+      rm $destFile #Cleanup
+
+      # We don't have to create a file, we can use process substitution.
+      lineCount=0
+      while read -r line; do
+          ((lineCount++))
+      done < <(find / -name sys*) # Using process substitution
+      echo "I got $lineCount lines in $destFile"
+    #+END_SRC
+
+    #+RESULTS:
+
+** Break and continue
+   http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_05.html
+*** Break is used to stop a loop before its normal ending.
+    #+BEGIN_SRC bash :results output :export code :tangle userBreak.sh  :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      function processCmd {
+          local cmd=""
+          for part in $@; do
+              cmd=$cmd" "$part
+          done
+          eval "$cmd"
+          return $? # Return the return value of eval
+
+      }
+
+      while [ true ]; do
+          echo -n ">>> "
+          read u
+          case $u in
+              quit)
+                  # Enter the command exit will also cause the loop to break.
+                  break 
+                  ;;
+              ,*)
+                  processCmd $u
+                  if [[ $? > 0 ]]; then # We have an error
+                      echo "Error."
+                  fi
+                  ;;
+          esac
+      done
+    #+END_SRC
+
+*** Continue
+    The continue statement resumes iteration of for, while and until loop.
+    They also act the same for select loop which will be seen later.
+    When used in a for loop, the controlling variable takes on the value of the next element in the list.
+    When used in a while or until construct, execution resumes with TEST-COMMAND at the top of the loop.
+    #+BEGIN_SRC bash :results output :export code :tangle contLoop.sh  :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      declare -a myArr=(1 2 3 4 5 6 7)
+      for x in ${myArr[@]}; do
+          if [[ $x = 3 ]]; then
+              echo "x=$x, sending continue"
+              continue;
+          fi
+          echo "x=$x, all is normal"
+      done
+    #+END_SRC
+
+    Due to the different behavior of continue with while loop, the following code block enter an infinit loop.
+    If you eval this code through emacs (C-c C-c), it will seem like emacs hangs. Press C-g to quit execution.
+    I recommend exporting the code before execution or modify it to not loop infinitly.
+    #+BEGIN_SRC bash :results output :export code :tangle contInfinit.sh  :tangle-mode (identity #o0755)
+      #!/bin/bash
+
+      declare -a myArr=(1 2 3 4 5 6 7)
+
+      x=0
+
+      # This loop will no get passed 3, it will continue forever
+      while [[ $x < ${#myArr[@]} ]]; do
+          if [[ $x = 3 ]]; then
+              echo "x=$x, sending continue"
+              continue;
+          fi
+          echo "x=$x, all is normal"
+          ((x++))
+      done
+
+
+    #+END_SRC
+
+    #+RESULTS:
+    : x=1, all is normal
+    : x=2, all is normal
+    : x=3, sending continue
+    : x=4, all is normal
+    : x=5, all is normal
+    : x=6, all is normal
+    : x=7, all is normal
+
+
+
+* Passing arguments to your scripts
+  Passing argument to your scripts works similar to passing args to function.
+  Arguments are access from $1 ...
+
+  Example of looping through arguments with for loop.
+  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2
+    #!/bin/bash
+
+    for i in $@; do
+        echo $i
+    done
+
+  #+END_SRC
+
+  #+RESULTS:
+
+  With a while
+
+  #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline hello how are you
+    #!/bin/bash
+    x=0
+    args=($@) # Assign arguments into array, separated by space.
+    while [[ $x < ${#args[@]} ]]; do
+        echo ${args[$x]}
+        ((x++))
+    done
+
+  #+END_SRC
+
+  #+RESULTS:
+
+** How to implement linux style arguments into my scripts.
+   There are a few way that are considered commons.
+
+*** Space separated
+    Usage: script -{short option} {value} --{long option} {value}
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test
+      #!/bin/bash
+
+      declare option file
+      ## This technique uses a key, value technique.
+      ## It handles short and long options.
+      while [[ $# > 0 ]]; do
+          key="$1" ## It will always be $1
+          case $key in
+              -o|--option)
+                  option="$2"
+                  # Shift will shift the params by 2, removing our last 2 from the list. 
+                  shift 2
+                  ;;
+              -f|--file)
+                  file="$2"
+                  shift 2
+                  ;;
+          esac
+      done
+      echo "Done passing arguments."
+      echo "Option: $option"
+      echo "File: $file"
+    #+END_SRC
+
+    #+RESULTS:
+    : Done passing arguments.
+    : Option: rw,ext4,0755
+    : File: /tmp/test
+
+*** = Separated
+    Usage: script -{short option}={value} --{long option}={value}
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test
+      #!/bin/bash
+
+      declare option file
+      ## This technique uses a key, value technique.
+      ## It handles short and long options.
+      for i in "$@"; do
+          case $i in
+              -o=*|--option=*)
+                  option="${i#*=}"
+                  shift
+                  ;;
+              -f=*|--file=*)
+                  file="${i#*=}"
+                  shift
+                  ;;
+          esac
+      done
+      echo "Done passing arguments."
+      echo "Option: $option"
+      echo "File: $file"
+    #+END_SRC
+
+    #+RESULTS:
+
+*** With getopts
+    Note: Getopts handles only short options.
+    Note: Handles chained options like: -vfo
+    Reference: https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html Scroll down to getopts
+    Note: man entry for getopt is not the same.
+
+    Usage: getopts optstring name [args]
+
+**** Usage
+    Getopts is a bash builtin. optstring contains the option char to look for. Example, "ofg" means we are looking for short options -o -f -g or any combination -go or -fgo ...
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+      #!/bin/bash
+
+      while getopts "ofg" opt; do
+          echo $opt
+      done
+    #+END_SRC
+
+    #+RESULTS:
+    : o
+    : g
+    : f
+
+    If a character is followed by a colon, the option is expected to have an argument.
+    In such case, getopts places the argument in variable OPTARG
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog
+      #!/bin/bash
+      declare fVal oVal=0 gVal=0
+
+      # In this example, option f is expected to have an argument. The option and the argument needs to be separated by a whitespace.
+      while getopts "of:g" opt; do
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+          esac
+      done
+      echo "Options: fVal:$fVal oVal:$oVal gVal:gVal"
+    #+END_SRC
+
+    #+RESULTS:
+    : Options: fVal:/var/log/syslog oVal:1 gVal:gVal
+
+    Everytime it is invoke, getops places the next option into variable and the index of the next argument to be processed in OPTIND.
+    While OPTIND will be set to 1 everytime the shell script is involved, it does not reset itself automatically.
+    If you are to call getopts multiple time, OPTIND has to be reset manually.
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTIND.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog
+      #!/bin/bash
+      declare fVal oVal=0 gVal=0
+
+      ## OPTIND is set to 1 when script is started
+      echo "OPTIND: $OPTIND"
+
+      while getopts "of:g" opt; do
+          echo "Inside while loop. OPTIND: $OPTIND"
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+          esac
+      done
+
+      echo "Passed while loop. OPTIND: $OPTIND"
+
+      echo "Attempting to redo same loop without reset of OPTIND"
+
+      while getopts "of:g" opt; do
+          echo "Inside second while loop. OPTIND: $OPTIND" # You will not see this message at all.
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+          esac
+      done
+
+      echo "Second while loop finished."
+    #+END_SRC
+
+    #+RESULTS:
+    : OPTIND: 1
+    : Inside while loop. OPTIND: 2
+    : Inside while loop. OPTIND: 3
+    : Inside while loop. OPTIND: 5
+    : Passed while loop. OPTIND: 5
+    : Attempting to redo same loop without reset of OPTIND
+    : Second while loop finished.
+
+**** getopts and Errors
+     By default, error message are printed when invalid options or missing options args.
+
+     This script does not supply an argument for option f, getopts will display error message.
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErr.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+      #!/bin/bash
+      declare fVal oVal=0 gVal=0
+
+      ## Good habit just in case for some reason it has not been reset.
+      OPTIND=1
+
+      while getopts "of:g" opt; do
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+              ,*)
+                  # Unknown option
+                  ;;
+          esac
+      done
+
+      echo "Options: fVal:$fVal oVal:$oVal gVal:gVal"
+    #+END_SRC
+
+     #+RESULTS:
+
+     If the first char in optstring is a colon, silent mode is used:
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+      #!/bin/bash
+      declare fVal oVal=0 gVal=0
+
+      ## Good habit just in case for some reason it has not been reset.
+      OPTIND=1
+
+      while getopts ":of:g" opt; do
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+              ,*)
+                  # Unknown option
+                  ;;
+          esac
+      done
+
+      echo "Options: fVal:$fVal oVal:$oVal gVal:gVal"
+    #+END_SRC
+
+     #+RESULTS:
+
+     If the variable OPTERR is set to 0, no error message will be printed.
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+      #!/bin/bash
+      declare fVal oVal=0 gVal=0
+
+      ## Good habit just in case for some reason it has not been reset.
+      OPTIND=1
+      OPTERR=0
+      while getopts "of:g" opt; do
+          case $opt in
+              f)
+                  fVal=$OPTARG
+                  ;;
+              o)
+                  oVal=1
+                  ;;
+              g)
+                  gVal=1
+                  ;;
+              ,*)
+                  # Unknown option
+                  ;;
+          esac
+      done
+
+      echo "Options: fVal:$fVal oVal:$oVal gVal:gVal"
+    #+END_SRC
+
+     #+RESULTS:
+
+     When an invalid options is found, the value ? is place in name, OPTARG is unset and a diagnostic message is printed by getopts
+     This code block will supply an invalid option x
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOpt.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x
+       #!/bin/bash
+       declare fVal oVal=0 gVal=0
+
+       ## Good habit just in case for some reason it has not been reset.
+       OPTIND=1
+       OPTERR=1 ## Makes sure that error messages will be printed unless suppressed in optstring
+       while getopts "of:g" opt; do
+           case $opt in
+               f)
+                   fVal=$OPTARG
+                   ;;
+               o)
+                   oVal=1
+                   ;;
+               g)
+                   gVal=1
+                   ;;
+               "?")
+                   echo "Invalid option detected, getopts will display an error message to."
+                   echo "opt = $opt"
+                   echo "OPTARG = $OPTARG"
+                   ;;
+               ,*)
+                   # Unknown option
+                   ;;
+           esac
+       done
+
+    #+END_SRC
+
+     #+RESULTS:
+
+     If getopts is in silent mode, OPTARG is set to the option char found.
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x
+       #!/bin/bash
+       declare fVal oVal=0 gVal=0
+
+       ## Good habit just in case for some reason it has not been reset.
+       OPTIND=1
+       OPTERR=0 # Setting this to 1 does not set getopts in silent mode. But it does suppress error messages.
+       while getopts ":of:g" opt; do
+           case $opt in
+               f)
+                   fVal=$OPTARG
+                   ;;
+               o)
+                   oVal=1
+                   ;;
+               g)
+                   gVal=1
+                   ;;
+               "?")
+                   echo "Invalid option detected, getopts will NOT display an error message."
+                   echo "opt = $opt"
+                   echo "OPTARG = $OPTARG"
+                   echo "Option $OPTARG is not a valid one."
+                   ;;
+               ,*)
+                   # Unknown option
+                   ;;
+           esac
+       done
+
+     #+END_SRC
+
+     #+RESULTS:
+
+     If a required argument is missing and getopts is NOT silent, ? is placed in name, OPTARG is unset and diagnostic message is printed.
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+       #!/bin/bash
+       declare fVal oVal=0 gVal=0
+
+       ## Good habit just in case for some reason it has not been reset.
+       OPTIND=1
+       OPTERR=0 
+       while getopts "of:g" opt; do
+           case $opt in
+               f)
+                   fVal=$OPTARG
+                   ;;
+               o)
+                   oVal=1
+                   ;;
+               g)
+                   gVal=1
+                   ;;
+               "?")
+                   echo "Missing argument detected, getopts will display an error message."
+                   echo "opt = $opt"
+                   echo "OPTARG = $OPTARG"
+                   echo "Option $OPTARG requires an argument."
+                   ;;
+               *)
+                   # Unknown option
+                   ;;
+           esac
+       done
+
+     #+END_SRC
+
+     #+RESULTS:
+
+     If a required argument is missing and getopts is silent, : is placed in name, OPTARG is set to the option found and diagnostic message is NOT printed.
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+       #!/bin/bash
+       declare fVal oVal=0 gVal=0
+
+       ## Good habit just in case for some reason it has not been reset.
+       OPTIND=1
+       OPTERR=0 # Setting this to 1 will only supress error message, getopts will NOT be in silent mode.
+       while getopts ":of:g" opt; do
+           case $opt in
+               f)
+                   fVal=$OPTARG
+                   ;;
+               o)
+                   oVal=1
+                   ;;
+               g)
+                   gVal=1
+                   ;;
+               ":") # Looking for ? will not work in this case.
+                   echo "Missing argument detected, getopts will NOT display an error message."
+                   echo "opt = $opt"
+                   echo "OPTARG = $OPTARG"
+                   echo "Option $OPTARG requires an argument."
+                   ;;
+               ,*)
+                   # Unknown option
+                   ;;
+           esac
+       done
+
+     #+END_SRC
+
+     #+RESULTS:
+
+
+
