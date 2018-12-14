@@ -713,64 +713,63 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 **** Bash specific operators
      Here we look at bash specific operator, instead of >, we use -gt
      Interger comparison with single bracket 
-     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755)
-      #!/bin/bash
+     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+       #!/bin/bash
 
-      # Integer comparison
-      a=1
-      b=1
-      c=2
+       # Integer comparison
+       a=1
+       b=1
+       c=2
 
-      echo '$a => '$a
-      echo '$b => '$b
-      echo '$c => '$c
+       echo '$a => '$a
+       echo '$b => '$b
+       echo '$c => '$c
 
-      if [ $a -eq $b ]; then
-          echo '[ $a -eq $b ] => TRUE'
-      else
-          echo '[ $a -eq $b ] => FALSE'
-      fi
+       if [ $a -eq $b ]; then
+           echo '[ $a -eq $b ] => TRUE'
+       else
+           echo '[ $a -eq $b ] => FALSE'
+       fi
 
-      if [ "$a" -ne "$b" ]; then
-          echo '[ "$a" -ne "$b" ] => TRUE'
-      else
-          echo '[ "$a" -ne "$b" ] => FALSE'
-      fi
+       if [ "$a" -ne "$b" ]; then
+           echo '[ "$a" -ne "$b" ] => TRUE'
+       else
+           echo '[ "$a" -ne "$b" ] => FALSE'
+       fi
 
-      if [ $a -gt $c ]; then
-          echo '[ $a -gt $c ] => TRUE'
-      else
-          echo '[ $a -gt $c ] => TRUE'
-      fi
+       if [ $a -gt $c ]; then
+           echo '[ $a -gt $c ] => TRUE'
+       else
+           echo '[ $a -gt $c ] => TRUE'
+       fi
 
-      if [ "$a" -ge "$b" ]; then
-          echo '[ "$a" -ge "$b" ] => TRUE'
-      else
-          echo '[ "$a" -ge "$b" ] => FALSE'
-      fi
+       if [ "$a" -ge "$b" ]; then
+           echo '[ "$a" -ge "$b" ] => TRUE'
+       else
+           echo '[ "$a" -ge "$b" ] => FALSE'
+       fi
 
-      if [ $c -lt $b ]; then
-          echo '[ $c -lt $b ] => TRUE'
-      else
-          echo '[ $c -lt $b ] => FALSE'
-      fi
+       if [ $c -lt $b ]; then
+           echo '[ $c -lt $b ] => TRUE'
+       else
+           echo '[ $c -lt $b ] => FALSE'
+       fi
 
-      if [ "$a" -le "$c" ]; then
-          echo '[ "$a" -le "$c" ] => TRUE'
-      else
-          echo '[ "$a" -le "$c" ] => FALSE'
-      fi
+       if [ "$a" -le "$c" ]; then
+           echo '[ "$a" -le "$c" ] => TRUE'
+       else
+           echo '[ "$a" -le "$c" ] => FALSE'
+       fi
 
-      a="hello"
-      b="hello"
+       a="hello"
+       b="hello"
 
-      # This does not throw an error, by will equal false.
-      # Those comparison operator are for integers.
-      if [ $a -eq $b ]; then
-          echo '$a = $b'
-      else
-          echo '$a != $b'
-      fi
+       # Those comparison operator are for integers.
+       if [ $a -eq $b ]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
     #+END_SRC
 
      #+RESULTS:
@@ -779,66 +778,63 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      :SPOILER:
     Works the same.
     :END:
-     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755)
-      #!/bin/bash
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+       #!/bin/bash
 
-      # Integer comparison
-      a=1
-      b=1
-      c=2
-      if [[ $a -eq $b ]]; then
-          echo '$a = $b'
-      else
-          echo '$a != $b'
-      fi
+       # Integer comparison
+       a=1
+       b=1
+       c=2
+       if [[ $a -eq $b ]]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
 
-      if [[ "$a" -ne "$b" ]]; then
-          echo '$a != $b'
-      else
-          echo '$a = $b'
-      fi
+       if [[ "$a" -ne "$b" ]]; then
+           echo '$a != $b'
+       else
+           echo '$a = $b'
+       fi
 
-      if [[ $a -gt $c ]]; then
-          echo '$a > $c'
-      else
-          echo '$a < $c'
-      fi
+       if [[ $a -gt $c ]]; then
+           echo '$a > $c'
+       else
+           echo '$a < $c'
+       fi
 
-      if [[ "$a" -ge "$b" ]]; then
-          echo '$a >= $b'
-      else
-          echo '$a <= $b'
-      fi
+       if [[ "$a" -ge "$b" ]]; then
+           echo '$a >= $b'
+       else
+           echo '$a <= $b'
+       fi
 
-      if [[ $c -lt $b ]]; then
-          echo '$c < $b'
-      else
-          echo '$c > $b'
-      fi
+       if [[ $c -lt $b ]]; then
+           echo '$c < $b'
+       else
+           echo '$c > $b'
+       fi
 
-      if [[ "$a" -le "$c" ]]; then
-          echo '$a <= $b'
-      else
-          echo '$a >= $b'
-      fi
+       if [[ "$a" -le "$c" ]]; then
+           echo '$a <= $b'
+       else
+           echo '$a >= $b'
+       fi
 
-      a="hello"
-      b="hello1"
+       a="hello"
+       b="hello1"
 
-      # This does not throw an error and in this case it evals to true.
-      # Do not use these operator for string comparison
-      if [[ $a -eq $b ]]; then
-          echo '$a = $b'
-      else
-          echo '$a != $b'
-      fi
+       # Do not use these operator for string comparison
+       if [[ $a -eq $b ]]; then
+           echo '$a = $b'
+       else
+           echo '$a != $b'
+       fi
     #+END_SRC
-
-     #+RESULTS:
 
 **** More common way to test
      Interger comparison with single bracket
-     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755)
+     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
        #!/bin/bash
 
        # Integer comparison
@@ -899,7 +895,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      Interger comparison with double bracket
-     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755)
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
        #!/bin/bash
 
        # Integer comparison
@@ -951,7 +947,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      What about <=  and >= ?
      They work slightly different.
      Note that previous operator : > < can also be used the same way
-     #+BEGIN_SRC bash :results output :exports code :tangle intComparisonCont.sh :tangle-mode (identity #o0755)
+     #+BEGIN_SRC bash :results output :exports code :tangle intComparisonCont.sh :tangle-mode (identity #o0755) :cmdline 2>&1
        #!/bin/bash
 
        # Integer comparison
@@ -980,7 +976,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 **** String Comparison
       Compare to see if 2 strings are equal:
-      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755)
+      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
         #!/bin/bash
 
         str1="Hello"
@@ -1036,7 +1032,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
       Checking if a string is null or not null -z -n
 
-      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755)
+      #+BEGIN_SRC  bash :results output :exports code :tangle strComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
         #!/bin/bash
 
         str=""
@@ -1083,7 +1079,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       Export the code section with C-u C-c C-v t
       Then proceed to execute simpleCase.sh
     :END:
-   #+BEGIN_SRC bash :results output :export code :tangle simpleCase.sh  :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle simpleCase.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
      echo -n "Press a number between 0 - 9 or 567 or anything else or 76."
      read val # Reads user input and store in $val. More on read later.
@@ -1125,7 +1121,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_01.html
 
    Example: Loop through an array
-   #+BEGIN_SRC bash :results output :export code :tangle forLoop.sh :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle forLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      declare -a myArray=(1 2 4 3 5 6 7)
@@ -1138,7 +1134,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+RESULTS:
 
    Example: Loop through arguments supply on the command line.
-   #+BEGIN_SRC bash :results output :export code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3
+   #+BEGIN_SRC bash :results output :export code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3 2>&1
      #!/bin/bash
 
      argsLen=${#@}
@@ -1158,7 +1154,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
 
    Example: Loop through an array
-   #+BEGIN_SRC bash :results output :export code :tangle whileLoop.sh :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle whileLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      declare -a myArray=(1 2 4 3 5 6 7)
@@ -1186,7 +1182,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_03.html
 
    Until loop is very similar to while except that it execute until the test resolves true.
-   #+BEGIN_SRC bash :results output :export code :tangle untilLoop.sh :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle untilLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      myArray=(1 2 3 4 5 6 7 8 9 0)
@@ -1220,7 +1216,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
     #+RESULTS:
 
-    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755)
+    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       # First lets create a file with multiple lines of content.
@@ -1252,7 +1248,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 ** Break and continue
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_05.html
 *** Break is used to stop a loop before its normal ending.
-    #+BEGIN_SRC bash :results output :export code :tangle userBreak.sh  :tangle-mode (identity #o0755)
+    #+BEGIN_SRC bash :results output :export code :tangle userBreak.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       function processCmd {
@@ -1288,7 +1284,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     They also act the same for select loop which will be seen later.
     When used in a for loop, the controlling variable takes on the value of the next element in the list.
     When used in a while or until construct, execution resumes with TEST-COMMAND at the top of the loop.
-    #+BEGIN_SRC bash :results output :export code :tangle contLoop.sh  :tangle-mode (identity #o0755)
+    #+BEGIN_SRC bash :results output :export code :tangle contLoop.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       declare -a myArr=(1 2 3 4 5 6 7)
@@ -1304,7 +1300,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     Due to the different behavior of continue with while loop, the following code block enter an infinit loop.
     If you eval this code through emacs (C-c C-c), it will seem like emacs hangs. Press C-g to quit execution.
     I recommend exporting the code before execution or modify it to not loop infinitly.
-    #+BEGIN_SRC bash :results output :export code :tangle contInfinit.sh  :tangle-mode (identity #o0755)
+    #+BEGIN_SRC bash :results output :export code :tangle contInfinit.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       declare -a myArr=(1 2 3 4 5 6 7)
@@ -1340,7 +1336,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   Arguments are access from $1 ...
 
   Example of looping through arguments with for loop.
-  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2
+  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 2>&1
     #!/bin/bash
 
     for i in $@; do
@@ -1353,7 +1349,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
   With a while
 
-  #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline hello how are you
+  #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline hello how are you 2>&1
     #!/bin/bash
     x=0
     args=($@) # Assign arguments into array, separated by space.
@@ -1371,7 +1367,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 *** Space separated
     Usage: script -{short option} {value} --{long option} {value}
-    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test 2>&1
       #!/bin/bash
 
       declare option file
@@ -1403,7 +1399,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 *** = Separated
     Usage: script -{short option}={value} --{long option}={value}
-    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test 2>&1
       #!/bin/bash
 
       declare option file
@@ -1438,7 +1434,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 **** Usage
     Getopts is a bash builtin. optstring contains the option char to look for. Example, "ofg" means we are looking for short options -o -f -g or any combination -go or -fgo ...
-    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
 
       while getopts "ofg" opt; do
@@ -1453,7 +1449,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
     If a character is followed by a colon, the option is expected to have an argument.
     In such case, getopts places the argument in variable OPTARG
-    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1480,7 +1476,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     Everytime it is invoke, getops places the next option into variable and the index of the next argument to be processed in OPTIND.
     While OPTIND will be set to 1 everytime the shell script is involved, it does not reset itself automatically.
     If you are to call getopts multiple time, OPTIND has to be reset manually.
-    #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTIND.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTIND.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1537,7 +1533,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      By default, error message are printed when invalid options or missing options args.
 
      This script does not supply an argument for option f, getopts will display error message.
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsErr.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErr.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1567,7 +1563,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      If the first char in optstring is a colon, silent mode is used:
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1597,7 +1593,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      If the variable OPTERR is set to 0, no error message will be printed.
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1628,7 +1624,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
      When an invalid options is found, the value ? is place in name, OPTARG is unset and a diagnostic message is printed by getopts
      This code block will supply an invalid option x
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOpt.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOpt.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -1662,7 +1658,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      If getopts is in silent mode, OPTARG is set to the option char found.
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -1697,7 +1693,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      If a required argument is missing and getopts is NOT silent, ? is placed in name, OPTARG is unset and diagnostic message is printed.
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -1732,7 +1728,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+RESULTS:
 
      If a required argument is missing and getopts is silent, : is placed in name, OPTARG is set to the option found and diagnostic message is NOT printed.
-     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
