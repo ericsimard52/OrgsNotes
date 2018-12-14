@@ -183,7 +183,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    : 4
    : bye!
    : 6
-   : /tmp/babel-16833Kcr/sh-script-168331gD: line 25: ((: d=bye!+3: syntax error in expression (error token is "!+3")
+   : /tmp/babel-16833Kcr/sh-script-16833Q9K: line 25: ((: d=bye!+3: syntax error in expression (error token is "!+3")
    : 0
  
 ** Functions
@@ -655,6 +655,18 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     #+begin_example
+     $var1=>Hello worlds!
+     $var2=>Hello worlds!
+     Test: [ "$var1" = "$var2" ] => var1 and var2 are equals
+     Test: [ $var1 = $var2 ] => var1 and var2 are NOT equals
+     Test: [[ "$var1" = "$var2" ]] => var1 and var2 are equals
+     Test: [[ $var1 = $var2 ]] => var1 and var2 are equals
+     Test: [ "$var1" == "$var2" ] => var1 and var2 are equals
+     Test: [ $var1 == $var2 ] => var1 and var2 are NOT equals
+     Test: [[ "$var1" == "$var2" ]] => var1 and var2 are equals
+     Test: [[ $var1 == $var2 ]] => var1 and var2 are equals
+     #+end_example
 
 *** Test on files
     For a full list, refer to link above. But here are a few test related to files that can be done with the if statement.
