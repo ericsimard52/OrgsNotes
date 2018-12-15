@@ -834,93 +834,89 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 **** More common way to test
      Interger comparison with single bracket
-     #+BEGIN_SRC bash :results output :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     The results of the following script can be a little confusing. What is important to notice and remember:
+     - single bracket [ ] works good to check if integers are = or == or != or ! .. = ..
+       Point being, single bracket is good for equals or not.
+     - Single brackets are not reliable to say the least when comparing > <, Binarie operator worked fine in single brackets.
+     #+BEGIN_SRC bash :results output scalar :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
        #!/bin/bash
 
        # Integer comparison
        a=1
        b=1
        c=2
+       echo -n 'Current test: [ $a = $b ]... : '
        if [ $a = $b ]; then
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!' 
        else
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        fi
 
+       echo -n 'Current test: [ $a == $b ]... : '
        if [ $a == $b ]; then
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!'
        else
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        fi
 
+       echo -n 'Current test: [ "$a" != "$b" ]... : '
        if [ "$a" != "$b" ]; then
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        else
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!'
        fi
 
+       echo -n 'Current test: [ ! "$a" = "$b" ]... : '
        if [ ! "$a" = "$b" ]; then
-           echo '! $a = $b'
+           echo '! $a = $b <= WRONG!'
        else
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!'
        fi
 
+       echo -n 'Current test: [ $a > $c ]... : '
        if [ $a > $c ]; then
-           echo '$a > $c'
+           echo '$a > $c <= WRONG!'
        else
-           echo '$a < $c'
+           echo '$a < $c <= RIGHT!'
        fi
 
+       echo -n 'Current test: [ $c < $b ]... : '
        if [ $c < $b ]; then
-           echo '$c < $b'
+           echo '$c < $b <= WRONG!'
        else
-           echo '$c > $b'
+           echo '$c > $b <= RIGHT!'
        fi
 
+       echo -n 'Current test: [ "$a" > "$c" ]... : '
        if [ "$a" > "$c" ]; then
-           echo '$a > $c'
+           echo '$a > $c <= WRONG!'
        else
-           echo '$a < $c'
+           echo '$a < $c <= RIGHT!'
        fi
 
+       echo -n 'Current test: [ "$c" < "$b" ]... : '
        if [ "$c" < "$b" ]; then
-           echo '$c < $b'
+           echo '$c < $b <= WRONG!'
        else
-           echo '$c > $b'
+           echo '$c > $b <= RIGHT'
        fi
 
        ## Take note of the ones below.
 
        if [ "$a" >= "$b" ]; then
-           echo '$a >= $b'
+           echo '$a >= $b <= RIGHT!'
        else
-           echo '$a <= $b'
+           echo '$a <= $b <= WRONG!'
        fi
 
        if [ "$a" <= "$c" ]; then
-           echo '$a <= $b'
+           echo '$a <= $b <= RIGHT!'
        else
-           echo '$a >= $b'
+           echo '$a >= $b <= WRONG!'
        fi
     #+END_SRC
 
      #+RESULTS:
-     #+begin_example
-     $a = $b
-     $a = $b
-     $a = $b
-     $a = $b
-     $a > $c
-     /tmp/babel-16833Kcr/sh-script-16833ePM: line 38: 1: No such file or directory
-     $c > $b
-     $a > $c
-     /tmp/babel-16833Kcr/sh-script-16833ePM: line 50: 1: No such file or directory
-     $c > $b
-     /tmp/babel-16833Kcr/sh-script-16833ePM: line 58: [: 1: unary operator expected
-     $a <= $b
-     /tmp/babel-16833Kcr/sh-script-16833ePM: line 64: [: 1: unary operator expected
-     $a >= $b
-     #+end_example
 
      Interger comparison with double bracket
      #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
@@ -930,41 +926,46 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
        a=1
        b=1
        c=2
+
+       echo -n 'Current test: [[ $a = $b ]] '
        if [[ $a = $b ]]; then
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!'
        else
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        fi
 
+       echo -n 'Current test: [[ $a == $b ]] '
        if [[ $a == $b ]]; then
-           echo '$a = $b'
+           echo '$a == $b <= RIGHT!'
        else
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        fi
 
+       echo -n 'Current test: [[ "$a" != "$b" ]] '
        if [[ "$a" != "$b" ]]; then
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        else
-           echo '$a = $b'
+           echo '$a = $b <+ RIGHT!'
        fi
-
+       echo -n 'Current test: [[ ! "$a" = "$b" ]] '
        if [[ ! "$a" = "$b" ]]; then
-           echo '$a != $b'
+           echo '$a != $b <= WRONG!'
        else
-           echo '$a = $b'
+           echo '$a = $b <= RIGHT!'
        fi
 
+       echo -n 'Current test: [[ $a > $c ]] '
        if [[ $a > $c ]]; then
-           echo '$a > $c'
+           echo '$a > $c <= WRONG!'
        else
-           echo '$a < $c'
+           echo '$a < $c <= RIGHT!'
        fi
 
-
+       echo -n 'Current test: [[ $c < $b ]] '
        if [[ $c < $b ]]; then
-           echo '$c < $b'
+           echo '$c < $b <= WRONG!'
        else
-           echo '$c > $b'
+           echo '$c > $b <= RIGHT!'
        fi
 
        # See anything missing?
@@ -984,23 +985,75 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
        c=2
 
        ## Does not work with [[ ... ]]
+       echo -n 'Current test: (( $a >= $c )) '
        if (( $a >= $c )); then
-           echo '$a >= $c'
+           echo '$a >= $c <= WRONG!'
        else
-           echo '$a <= $c'
+           echo '$a <= $c <= RIGHT!'
        fi
 
-
+       echo -n 'Current test: (( $c <= $b )) '
        if (( $c <= $b )); then
-           echo '$c <= $b'
+           echo '$c <= $b <= WRONG!'
        else
-           echo '$c >= $b'
+           echo '$c >= $b <= RIGHT!'
        fi
 
+
+       # As mentioned, previous operators works with this format:
+       echo "Attempting previous test with (( ... ))"
+       echo -n 'Current test: (( $a = $b )) '
+       if (( $a = $b )); then
+           echo '$a = $b <= RIGHT!'
+       else
+           echo '$a != $b <= WRONG!'
+       fi
+
+       echo -n 'Current test: (( $a == $b )) '
+       if (( $a == $b )); then
+           echo '$a == $b <= RIGHT!'
+       else
+           echo '$a != $b <= WRONG!'
+       fi
+
+       echo -n 'Current test: (( "$a" != "$b" )) '
+       if (( "$a" != "$b" )); then
+           echo '$a != $b <= WRONG!'
+       else
+           echo '$a = $b <+ RIGHT!'
+       fi
+       echo -n 'Current test: (( ! "$a" = "$b" )) '
+       if (( ! "$a" = "$b" )); then
+           echo '$a != $b <= WRONG!'
+       else
+           echo '$a = $b <= RIGHT!'
+       fi
+
+       echo -n 'Current test: (( $a > $c )) '
+       if (( $a > $c )); then
+           echo '$a > $c <= WRONG!'
+       else
+           echo '$a < $c <= RIGHT!'
+       fi
+
+       echo -n 'Current test: (( $c < $b )) '
+       if (( $c < $b )); then
+           echo '$c < $b <= WRONG!'
+       else
+           echo '$c > $b <= RIGHT!'
+       fi
 
     #+END_SRC
 
      #+RESULTS:
+
+     Has you can see, usin (( ... )) format offer results that are more like other languages, single = sign attempts an assignement. The rest works fine.
+
+     :IN_SHORT:
+     When doing binary comparison, use [ ] and bash operator ( -eq -lt -ge ... )
+     Use (( ... )) to use < > <= ... 
+     Always a good habit to quote your variable.
+     :END:
 
 **** String Comparison
       Compare to see if 2 strings are equal:
@@ -1013,28 +1066,131 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         str5="abcdef"
         str6="abcdea"
 
+        echo "Running test with [ ... ]"
         if [ $str1 = $str2 ]; then # Note the spaces [ ... = ... ];
             echo '$str1: '$str1' = $str2: '$str2
+        else
+            echo "This test 1 should not fail."
         fi
 
         if [ $str1 == $str2 ]; then
             echo '$str1: '$str1' = $str2: '$str2
+        else
+            echo "This test 2 should not fail."
         fi
 
         if [ "$str1" = "$str2" ]; then
-            echo '$str1: '$str1' = $str2: '$str2
+            echo '"$str1": '$str1' = "$str2": '$str2
+        else
+            echo "This test 3 should not fail."
         fi
 
         if [ "$str1" == "$str2" ]; then
-            echo '$str1: '$str1' = $str2: '$str2
+            echo '"$str1": '$str1' == "$str2": '$str2
+        else
+            echo "This test 4 should not fail."
         fi
 
         if [ "$str1" != "$str3" ]; then
-            echo '$str1: '$str1' != $str2: '$str2
+            echo '"$str1": '$str1' != $"str2": '$str3
+        else
+            echo "This test 4 should not fail."
         fi
 
         if [ ! "$str1" = "$str3" ]; then
-            echo '$str1: '$str1' != $str2: '$str2
+            echo '"$str1": ! '$str1' = $"str2": '$str3
+        else
+            echo "This test 5 should not fail."
+        fi
+
+        echo ""
+        echo "Running same test with [[ ... ]]"
+        if [[ $str1 = $str2 ]]; then
+            echo '$str1: '$str1' = $str2: '$str2
+        else
+            echo "This test 6 should not fail."
+        fi
+
+        if [[ $str1 == $str2 ]]; then
+            echo '$str1: '$str1' == $str2: '$str2
+        else
+            echo "This test 7 should not fail."
+        fi
+
+        if [[ "$str1" = "$str2" ]]; then
+            echo '"$str1": '$str1' = "$str2": '$str2
+        else
+            echo "This test 8 should not fail."
+        fi
+
+        if [[ "$str1" == "$str2" ]]; then
+            echo '"$str1": '$str1' == "$str2": '$str2
+        else
+            echo "This test 9 should not fail."
+        fi
+
+        if [[ "$str1" != "$str3" ]]; then
+            echo '"$str1": '$str1' != "$str3": '$str3
+        else
+            echo "This test 10 should not fail."
+        fi
+
+        if [[ ! "$str1" = "$str3" ]]; then
+            echo '"$str1": ! '$str1' = "$str3": '$str3
+        else
+            echo "This test 11 should not fail."
+        fi
+
+        echo ""
+        echo "Running same test with (( ))"
+        ## Lets use (( ))
+        if (( $str1 = $str2 )); then
+            echo '$str1: '$str1' = $str2: '$str2
+        else
+            echo "This test 12 should not fail."
+        fi
+
+        if (( $str1 == $str2 )); then
+            echo '$str1: '$str1' = $str2: '$str2
+        else
+            echo "This test 13 should not fail."
+        fi
+        if (( $str1 = $str3 )); then
+            echo '$str1: '$str1' = $str3: '$str3
+        else
+            echo "This test 14 fails as it should."
+        fi
+
+        if (( $str1 == $str3 )); then
+            echo '$str1: '$str1' = $str2: '$str3
+        else
+            echo "This test 15 fails as it should."
+        fi
+
+        fi
+
+        if (( "$str1" = "$str2" )); then
+            echo '"$str1": '$str1' = "$str2": '$str2
+        else
+            echo "This test 16 should not fail."
+        fi
+
+        if (( "$str1" == "$str2" )); then
+            echo '"$str1": '$str1' == "$str2": '$str2
+        else
+            echo "This test 17 should not fail."
+        fi
+
+        if (( "$str1" != "$str3" )); then
+            echo '"$str1": '$str1' != "$str3": '$str3
+        else
+            echo "This test 18 should not fail."
+        fi
+
+        if [ ! "$str1" = "$str3" ]; then
+            echo '"$str1": '$str1' != "$str3": '$str3
+        else
+            echo "This test 19 should not fail."
         fi
 
 
@@ -1057,6 +1213,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
       #+RESULTS:
 
+      Single or double bracket are good.
 
       Checking if a string is null or not null -z -n
 
@@ -1864,3 +2021,122 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         popd >/dev/null # Revert directory stack
     done
   #+END_SRC
+
+
+* Bash prompt
+  Bash prompt 
+
+* Project
+
+Create a simple file manager
+
+#+NANE HEADER
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :cmdline 2>&1
+  #!/bin/bash
+  declare -f enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit
+#+END_SRC
+
+#+NAME: exitDirectory
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :cmdline 2>&1 # :epilogue existDirectory
+  function exitDirectory {
+      popd >/dev/null # pop the top of the stack
+  }
+
+#+END_SRC
+
+#+NAME: enterDirectory
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :cmdline #:epilogue enterDirextory ~/
+  function enterDirextory {
+      echo 1
+      if [ -z $1 ]; then # No directory provided
+          return 1
+      fi
+
+      # Check that target is a directory
+      if [ ! -d $1 ]; then
+          return 2
+      fi
+      pushd $1 #>/dev/null # Place directory on top of the stack.
+  }
+
+#+END_SRC
+
+#+RESULTS:
+
+#+NAME: listContent
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
+  # Called without arguments, list the content in current directory
+  # Called with an argument, list the content if arg is directory
+  # Complains if arg is otherwise.
+  function listContent {
+      if [ -z $1 ]; then
+         ls -l
+         return 0
+      fi
+      if [ -d $1 ]; then
+          enterDirectory $1
+          ls -l
+          exitDirectory
+          return 0
+      fi
+      >&2 echo "Error, listContent argument not understood."
+      return 1
+  }
+
+#+END_SRC
+
+#+RESULTS: listContent
+
+#+NAME: createFile
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
+  function createFile {
+      echo -n "Enter filename: "
+      read n # read user input into var n
+      if [ -f $n ]; then # File exists
+          >&2 echo "Error file exists."
+          return 1
+      fi
+      eval "touch $1" # Attempt to create the file
+      if (( $1 > 0 )); then # Return value of eval is stored in $?
+          # >&2 redirects output into stderr.
+          # It is good practice to redirect error message to stderr (file descriptor 2)
+          >&2 echo "eval touch $1 returned an error."
+          return 1 # Return error
+      fi
+      echo "File $n created."
+      return 0 # Success
+  }
+#+END_SRC
+
+#+NAME: removeFile
+#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
+  function removeFile {
+      select file in * "QUIT"; do
+          if [[ "$file" == "QUIT" ]]; then
+              echo "Leaving."
+              return 0
+          fi
+          if [ ! -f $file ]; then
+              echo "$file does not exists."
+              return 1
+          fi
+          if [ -d $file ]; then
+              echo "$file is a directory, doing nothing."
+              return 2
+          fi
+          if [ -f $file ]; then
+              echo "\e[33mWARNING THIS WILL REALLY DELETE THE FILE.\e[0m"
+              eval "rm -i $file"
+              if [ $? > 0 ]; then
+                  echo "Removal of the file caused an error."
+                  return 3
+              fi
+              echo "File has been removed."
+              return 0
+          fi
+          >&2 echo "Unknown error, but file was not deleted."
+          return 127
+  }
+#+END_SRC
+
+
