@@ -1343,7 +1343,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 * Loops
 ** For loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_01.html
-
+   for ITEMS in LIST; do
+     ...
+   done
    Example: Loop through an array
    #+BEGIN_SRC bash :results output :export code :tangle forLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
@@ -2062,21 +2064,117 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   #+END_SRC
 
 
-* Bash prompt
-  Bash prompt 
+* Projects
 
-* Project
+:README:
+You will learn more tricks by looking at my version of the project.
+Some missing bash notion can create some challenges doing this project. This is normal, we just started scripting.
+For example, select splits the list based on a bash variable IFS. IFS default setting is space.
+This cause select for each word in mainMenu. To fix this behavior, we set IFS to ; before our main loop.
+Unsetting IFS will reset to its default behavior.
+:END:
 
-Create a simple file manager
+** Create a simple file manager
 
-#+NANE HEADER
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :cmdline 2>&1
+Most of the src code below cannot run in evaluation mode without changin src block headers.
+To export, place your cursor below #+NAME: scriptExport and press C-u C-c C-v t
+Attempting to export on any other code block will not work. This is a setup that allows exportation of the project only without export all code block.
+The project will also export when exporting all code block.
+
+#+NAME: scriptExport
+#+BEGIN_SRC bash :eval no :tangle myFm.sh :tangle-mode (identity #o0755) :noweb tangle
   #!/bin/bash
+
+  <<scriptHeader>>
+
+  <<exitDirectory>>
+
+  <<enterDirectory>>
+
+  <<listContent>>
+
+  <<createDirectory>>
+
+  <<removeDirectory>>
+
+  <<createFile>>
+
+  <<removeFile>>
+
+  <<QUIT>>
+
+  <<Main>>
+#+END_SRC
+
+#+NAME: Main
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :export no
+  ###
+  # To allow for our enterDirectory function to have a "Up" feature. Our directory stack need to have every part from the root folder.
+  # If we don't, the script will be restricted to the current directory and below.
+  # This is because the directory stack base entry will be the current directory. Any attempt to popd this entry will not result in the parent directory
+  # Note that our current directory will remain at the base of the stack
+  currentTree=$(pwd)
+  IFS=/
+  echo "Clear the directory stack."
+  dirs -c
+  if [[ $? > 0 ]]; then
+      >&2 echo "Error clearing directory stack. Cannot continue."
+      exit 1
+  fi
+
+  echo "Rebuilding it."
+  first=0 # our first pushd requires a / in front.
+  for part in $currentTree; do
+      if [[ $first > 0 ]]; then
+          pushd $part
+      else
+          pushd "/$part"
+          first=1
+      fi
+  done
+  unset IFS
+  echo $currentTree
+  IFS=;
+  while true; do
+      select OPT in ${mainMenu[@]}; do
+          case $OPT in
+              "List Content")
+                  listContent
+                  ;;
+              "Create File")
+                  createFile
+                  ;;
+              "Create Directory")
+                  createDirectory
+                  ;;
+              "Remove File")
+                  removeFile
+                  ;;
+              "Remove Directory")
+                  removeDirectory
+                  ;;
+              "Enter Directory")
+                  enterDirectory
+                  ;;
+              "Quit")
+                  Quit
+                  ;;
+              ,*)
+                  >&2 echo "Selection not understood."
+                  ;;
+          esac
+      done
+  done
+#+END_SRC
+
+#+NAME: scriptHeader
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   declare -f enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit
+  declare -a mainMenu=("List Content" "Enter Directory" "Create File" "Create Directory" "Remove File" "Remove Directory" "Quit")
 #+END_SRC
 
 #+NAME: exitDirectory
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :cmdline 2>&1 # :epilogue existDirectory
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function exitDirectory {
       popd >/dev/null # pop the top of the stack
   }
@@ -2084,26 +2182,29 @@ Create a simple file manager
 #+END_SRC
 
 #+NAME: enterDirectory
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :cmdline #:epilogue enterDirextory ~/
-  function enterDirextory {
-      echo 1
-      if [ -z $1 ]; then # No directory provided
-          return 1
-      fi
-
-      # Check that target is a directory
-      if [ ! -d $1 ]; then
-          return 2
-      fi
-      pushd $1 #>/dev/null # Place directory on top of the stack.
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function enterDirectory {
+      select DIR in "UP" */ "Back"; do
+          case $DIR in
+              "UP")
+                  popd
+                  break;
+                  ;;
+              "Back")
+                  break
+                  ;;
+              ,*)
+                  pushd $DIR
+                  break;
+                  ;;
+          esac
+      done
   }
 
 #+END_SRC
 
-#+RESULTS:
-
 #+NAME: listContent
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   # Called without arguments, list the content in current directory
   # Called with an argument, list the content if arg is directory
   # Complains if arg is otherwise.
@@ -2124,22 +2225,77 @@ Create a simple file manager
 
 #+END_SRC
 
-#+RESULTS: listContent
-
-#+NAME: createFile
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
-  function createFile {
-      echo -n "Enter filename: "
+#+NAME: createDirectory
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function createDirectory {
+      echo -n "Enter directory name: "
       read n # read user input into var n
       if [ -f $n ]; then # File exists
           >&2 echo "Error file exists."
           return 1
       fi
-      eval "touch $1" # Attempt to create the file
-      if (( $1 > 0 )); then # Return value of eval is stored in $?
+      eval "mkdir -vp $n" # Attempt to create the directory
+      if (( $? > 0 )); then # Return value of eval is stored in $?
           # >&2 redirects output into stderr.
           # It is good practice to redirect error message to stderr (file descriptor 2)
-          >&2 echo "eval touch $1 returned an error."
+          >&2 echo "eval mkdir -vp $1 returned an error."
+          return 1 # Return error
+      fi
+      echo "Directory $n created."
+      return 0 # Success
+  }
+#+END_SRC
+
+#+NAME: removeDirectory
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function removeDirectory {
+      select file in * "QUIT"; do
+          if [[ "$file" == "QUIT" ]]; then
+              echo "Leaving."
+              return 0
+          fi
+          if [ ! -e $file ]; then
+              echo "$file does not exists."
+              return 1
+          fi
+          if [ -f $file ]; then
+              echo "$file is a regular file, doing nothing."
+              return 2
+          fi
+          if [ -d $file ]; then
+              # Checking if directory is empty
+              cCount=eval "ls -A $file | wc -l"
+              if [[ $cCount > 0 ]]; then
+                  echo "Warning, directory not empty, doing nothing."
+                  return 3
+              fi
+              eval "rmdir -iv $file"
+              if [[ $? > 0 ]]; then
+                  echo "Error with eval comand to remove directory."
+                  return 4
+              fi
+              return 0
+          fi
+          >&2 echo "Unknown error, but file was not deleted."
+          return 127
+      done
+  }
+#+END_SRC
+
+#+NAME: createFile
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function createFile {
+      echo -n "Enter file name: "
+      read n # read user input into var n
+      if [ -e $n ]; then # File exists
+          >&2 echo "Error file exists."
+          return 1
+      fi
+      eval "touch $n" # Attempt to create the directory
+      if (( $? > 0 )); then # Return value of eval is stored in $?
+          # >&2 redirects output into stderr.
+          # It is good practice to redirect error message to stderr (file descriptor 2)
+          >&2 echo "eval touch -vp $1 returned an error."
           return 1 # Return error
       fi
       echo "File $n created."
@@ -2148,34 +2304,45 @@ Create a simple file manager
 #+END_SRC
 
 #+NAME: removeFile
-#+BEGIN_SRC bash :results output :tangle myFm.sh :tangle-mode identity(#o0755) :shebang :noweb yes :cmdline 2>&1 # :epilogue listContent ~/
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function removeFile {
       select file in * "QUIT"; do
           if [[ "$file" == "QUIT" ]]; then
               echo "Leaving."
               return 0
           fi
-          if [ ! -f $file ]; then
+          if [ ! -e $file ]; then
               echo "$file does not exists."
               return 1
           fi
           if [ -d $file ]; then
-              echo "$file is a directory, doing nothing."
+              echo "$file is a directory file, doing nothing."
               return 2
           fi
           if [ -f $file ]; then
-              echo "\e[33mWARNING THIS WILL REALLY DELETE THE FILE.\e[0m"
-              eval "rm -i $file"
-              if [ $? > 0 ]; then
-                  echo "Removal of the file caused an error."
+              echo -e "\e[33mWARNING, THIS WILL REALLY DELETE THE FILE\e[0m"
+              eval "rm -iv $file"
+              if [[ $? > 0 ]]; then
+                  echo "eval returned and error."
                   return 3
               fi
-              echo "File has been removed."
+              echo "File deleted."
               return 0
           fi
           >&2 echo "Unknown error, but file was not deleted."
-          return 127
+          return 3
+      done
   }
 #+END_SRC
+
+#+NAME: QUIT
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function Quit {
+      echo "Cleaning up."
+      unset  enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit mainMenu
+      exit 0
+  }
+#+END_SRC
+
 
 
