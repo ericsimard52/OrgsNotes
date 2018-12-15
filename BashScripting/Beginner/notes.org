@@ -1357,7 +1357,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         echo ${args[$x]}
         ((x++))
     done
-
+    
   #+END_SRC
 
   #+RESULTS:
@@ -1558,7 +1558,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       done
 
       echo "Options: fVal:$fVal oVal:$oVal gVal:gVal"
-    #+END_SRC
+     #+END_SRC
 
      #+RESULTS:
 
@@ -1764,3 +1764,75 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 
 
+
+* Making menus with the select built-in
+  :README:
+  Code block in this section creates interactive script, make sure to export before and run them in a shell
+  C-u C-c C-v t
+  :END:
+  The select makes it easy to display interactive menu to the user in CLI
+
+  select WORD [in LIST]; do ... ; done
+
+  LIST is expanded and a list of items is generated from it. The expansion is printed to stderr
+  Due to the interactive nature of this code, it must be exported C-u C-c C-v t
+  #+BEGIN_SRC bash :results output :export code :tangle simpleSelect.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
+
+    # The following script will give you a menu of all the directory in your home directory.
+    # After making a selection, it will list all files in that directory or quit.
+    # Due to the interactive nature of this script, it will need to be exported.
+
+    while true; do
+        select DIR in ~/*/ "QUIT"; do
+            if [[ "$DIR" = "QUIT" ]]; then
+                exit 0
+            fi
+               ls -l $DIR
+        done
+    done
+  #+END_SRC
+
+** Submenus
+   Nested select statement creates submenus
+   Due to the interactive nature of this code, it must be exported C-u C-c C-v t
+  #+BEGIN_SRC bash :results output :export code :tangle selectSubMenu.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
+
+    # The following script will give you a menu with the content of your home directory.
+    # After making a selection, if it's a file it will print the content to stdout (Carefull with your selection, zip files are long to print)
+    # If it is a directory, it will enter the folder and list the content.
+    # In that submenu, you can go back. If you select a directory, it's content will be listed.
+    # Due to the interactive nature of this script, it will need to be exported.
+
+    while true; do
+        ## pushd is a better way in a script to change directory.
+        ## Removing >/dev/null will cause pushd to print the directory stack when it is manipulated.
+        pushd ~ >/dev/null # Push ! directory on top of the stack.
+        select DIR in * "QUIT"; do
+            if [[ "$DIR" = "QUIT" ]]; then
+                exit 0
+            elif [ -d $DIR ]; then
+                pushd $DIR >/dev/null
+                select subdir in * "BACK"; do
+                    if [[ "$subdir" = "BACK" ]]; then
+                        break
+                    elif [ -f $subdir ]; then
+                        cat $subdir # Prints the content of the file to stdout
+                    elif [ -d $subdir ]; then
+                        ls -l $subdir
+                    else
+                        echo "I don't know what to do with that."
+                    fi
+                done
+                popd >/dev/null
+            elif [ -f $DIR ]; then
+                cat $DIR
+            else
+                echo "I don't know what to do with that."
+            fi
+
+        done
+        popd >/dev/null # Revert directory stack
+    done
+  #+END_SRC
