@@ -877,7 +877,19 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
            echo '$c > $b'
        fi
 
-       ## Take note of those last ones.
+       if [ "$a" > "$c" ]; then
+           echo '$a > $c'
+       else
+           echo '$a < $c'
+       fi
+
+       if [ "$c" < "$b" ]; then
+           echo '$c < $b'
+       else
+           echo '$c > $b'
+       fi
+
+       ## Take note of the ones below.
 
        if [ "$a" >= "$b" ]; then
            echo '$a >= $b'
@@ -893,6 +905,22 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     #+begin_example
+     $a = $b
+     $a = $b
+     $a = $b
+     $a = $b
+     $a > $c
+     /tmp/babel-16833Kcr/sh-script-16833ePM: line 38: 1: No such file or directory
+     $c > $b
+     $a > $c
+     /tmp/babel-16833Kcr/sh-script-16833ePM: line 50: 1: No such file or directory
+     $c > $b
+     /tmp/babel-16833Kcr/sh-script-16833ePM: line 58: [: 1: unary operator expected
+     $a <= $b
+     /tmp/babel-16833Kcr/sh-script-16833ePM: line 64: [: 1: unary operator expected
+     $a >= $b
+     #+end_example
 
      Interger comparison with double bracket
      #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
