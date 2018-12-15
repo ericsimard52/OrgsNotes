@@ -833,11 +833,15 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
 **** More common way to test
-     Interger comparison with single bracket
-     The results of the following script can be a little confusing. What is important to notice and remember:
+     With more commons way to test, come more way to get confused.
+     We will look at the difference between if [ ... ], if [[]], if (( ... ))
+     The results of the following 3 script can be a little confusing. What is important to notice and remember:
      - single bracket [ ] works good to check if integers are = or == or != or ! .. = ..
        Point being, single bracket is good for equals or not.
      - Single brackets are not reliable to say the least when comparing > <, Binarie operator worked fine in single brackets.
+
+
+     Interger comparison with single bracket
      #+BEGIN_SRC bash :results output scalar :exports code :tangle ifComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
        #!/bin/bash
 
@@ -915,8 +919,24 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
            echo '$a >= $b <= WRONG!'
        fi
     #+END_SRC
-
+    
      #+RESULTS:
+     #+begin_example
+     Current test: [ $a = $b ]... : $a = $b <= RIGHT!
+     Current test: [ $a == $b ]... : $a = $b <= RIGHT!
+     Current test: [ "$a" != "$b" ]... : $a = $b <= RIGHT!
+     Current test: [ ! "$a" = "$b" ]... : $a = $b <= RIGHT!
+     Current test: [ $a > $c ]... : $a > $c <= WRONG!
+     Current test: [ $c < $b ]... : /tmp/babel-16833Kcr/sh-script-16833S4k: line 44: 1: No such file or directory
+     $c > $b <= RIGHT!
+     Current test: [ "$a" > "$c" ]... : $a > $c <= WRONG!
+     Current test: [ "$c" < "$b" ]... : /tmp/babel-16833Kcr/sh-script-16833S4k: line 58: 1: No such file or directory
+     $c > $b <= RIGHT
+     /tmp/babel-16833Kcr/sh-script-16833S4k: line 66: [: 1: unary operator expected
+     $a <= $b <= WRONG!
+     /tmp/babel-16833Kcr/sh-script-16833S4k: line 72: [: 1: unary operator expected
+     $a >= $b <= WRONG!
+     #+end_example
 
      Interger comparison with double bracket
      #+BEGIN_SRC bash :results output :exports code :tangle intComparison.sh :tangle-mode (identity #o0755) :cmdline 2>&1
@@ -972,6 +992,12 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     : Current test: [[ $a = $b ]] $a = $b <= RIGHT!
+     : Current test: [[ $a == $b ]] $a == $b <= RIGHT!
+     : Current test: [[ "$a" != "$b" ]] $a = $b <+ RIGHT!
+     : Current test: [[ ! "$a" = "$b" ]] $a = $b <= RIGHT!
+     : Current test: [[ $a > $c ]] $a < $c <= RIGHT!
+     : Current test: [[ $c < $b ]] $c > $b <= RIGHT!
 
      What about <=  and >= ?
      They work slightly different.
@@ -1046,6 +1072,19 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     #+begin_example
+     Current test: (( $a >= $c )) $a <= $c <= RIGHT!
+     Current test: (( $c <= $b )) $c >= $b <= RIGHT!
+     Attempting previous test with (( ... ))
+     Current test: (( $a = $b )) /tmp/babel-16833Kcr/sh-script-16833rgG: line 28: ((: 1 = 1 : attempted assignment to non-variable (error token is "= 1 ")
+     $a != $b <= WRONG!
+     Current test: (( $a == $b )) $a == $b <= RIGHT!
+     Current test: (( "$a" != "$b" )) $a = $b <+ RIGHT!
+     Current test: (( ! "$a" = "$b" )) /tmp/babel-16833Kcr/sh-script-16833rgG: line 48: ((: ! 1 = 1 : attempted assignment to non-variable (error token is "= 1 ")
+     $a = $b <= RIGHT!
+     Current test: (( $a > $c )) $a < $c <= RIGHT!
+     Current test: (( $c < $b )) $c > $b <= RIGHT!
+     #+end_example
 
      Has you can see, usin (( ... )) format offer results that are more like other languages, single = sign attempts an assignement. The rest works fine.
 
