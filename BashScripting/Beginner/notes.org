@@ -2346,3 +2346,363 @@ The project will also export when exporting all code block.
 
 
 
+
+
+** Here is another version, making more use of the select builtin
+
+Most of the src code below cannot run in evaluation mode without changin src block headers.
+To export, place your cursor below #+NAME: scriptExport and press C-u C-c C-v t
+Attempting to export on any other code block will not work. This is a setup that allows exportation of the project only without export all code block.
+The project will also export when exporting all code block.
+
+#+NAME: scriptExport2
+#+BEGIN_SRC bash :eval no :tangle myFm2.sh :tangle-mode (identity #o0755) :noweb tangle
+  #!/bin/bash
+
+  <<scriptHeader2>>
+
+  <<exitDirectory2>>
+
+  <<enterDirectory2>>
+
+  <<listContent2>>
+
+  <<createDirectory2>>
+
+  <<createFile2>>
+
+  <<rename>>
+
+  <<removeDirectory2>>
+
+  <<removeFile2>>
+
+  <<enableSub>>
+  
+  <<createSub>>
+
+  <<QUIT2>>
+
+  <<Main2>>
+#+END_SRC
+
+#+NAME: scriptHeader2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  declare -f enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit
+  ## Simple hack to display colored item in select.
+  declare -a mainMenu=("Reload" "Create" "Quit" "..")
+  declare -a subMenu
+  # SELECT uses PS3 to display the default #?
+  # Those are part of the Bash prompt, which will be covered soon.
+  export PS3='>>> '
+#+END_SRC
+
+#+NAME: Main2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :export no
+  ###
+  # To allow for our enterDirectory function to have a "Up" feature. Our directory stack need to have every part from the root folder.
+  # If we don't, the script will be restricted to the current directory and below.
+  # This is because the directory stack base entry will be the current directory. Any attempt to popd this entry will not result in the parent directory
+  # Note that our current directory will remain at the base of the stack
+  currentTree=$(pwd)
+  IFS=/
+  echo "Clear the directory stack."
+  dirs -c
+  if [[ $? > 0 ]]; then
+      >&2 echo "Error clearing directory stack. Cannot continue."
+      exit 1
+  fi
+
+  echo -n "Rebuilding it."
+  first=0 # our first pushd requires a / in front.
+  for part in $currentTree; do
+      if [[ $first > 0 ]]; then
+          pushd $part > /dev/null
+          echo -n '.'
+      else
+          pushd "/$part" >/dev/null
+          echo -n '.'
+          first=1
+      fi
+  done
+  echo ""
+  unset IFS
+  echo $currentTree
+  IFS=;
+  while true; do
+      select OPT in ${mainMenu[@]} *; do
+          case $OPT in
+              "List")
+                  listContent
+                  ;;
+              "Create")
+                  createSub
+                  ;;
+              "Quit")
+                  Quit
+                  ;;
+              "..")
+                  exitDirectory
+                  break
+                  ;;
+              "Reload")
+                  break
+                  ;;
+              ,*)
+                  enableSub $OPT
+                  if [[ $? == 0 ]]; then
+                      break
+                  fi
+                  ;;
+          esac
+      done
+  done
+#+END_SRC
+
+#+NAME:enableSub
+#+BEGIN_SRC bash :eval no :tangle no :export no
+  function enableSub {
+        declare psBAK=$PS3
+        declare -a subMenus
+        export PS3=$'>>> '
+
+        if [[ -d $1 ]]; then
+            subMenus=("Enter" "Delete" "Back")
+            select SUB in ${subMenus[@]}; do
+                case $SUB in
+                    "Enter")
+                        enterDirectory $1
+                        return 0
+                        ;;
+                    "Delete")
+                        removeDirectory $1
+                        break;
+                        ;;
+                    "Back")
+                        $PS3=$psBAK
+                        unset subMenus
+                        break;
+                        ;;
+                    ,*)
+                        echo "Unknown option."
+                        ;;
+                esac
+            done
+        fi
+
+        if [[ -f $1 ]]; then
+            subMenus=("Rename" "Delete" "Back")
+            select SUB in ${subMenus[@]}; do
+                case $SUB in
+                    "Rename")
+                        $PS3=$psBAK
+                        unset subMenus
+                        rename $1
+                        break;
+                        ;;
+                    "Delete")
+                        $PS3=$psBAK
+                        unset subMenus
+                        removeFile $1
+                        break;
+                        ;;
+                    "Back")
+                        $PS3=$psBAK
+                        unset subMenus
+                        break
+                        ;;
+                    ,*)
+                        echo "Unknown option: $SUB"
+                        ;;
+                esac
+            done
+        fi
+    }
+#+END_SRC
+
+#+NAME:createSub
+#+BEGIN_SRC bash :eval no :tangle no :export no
+    function createSub {
+        declare psBAK=$PS3
+        declare -a subMenus
+        export PS3='Create what type? >>> '
+        subMenus=("File" "Directory" "Back")
+        select SUB in ${subMenus[@]}; do
+            case $SUB in
+                "File")
+                    echo -n "File name: "
+                    read f
+                    createFile $f
+                    unset f
+                    export PS3=$psBAK
+                    unset subMenus
+                    break
+                    ;;
+                "Directory")
+                    echo -n "Directory name: "
+                    read n
+                    createDirectory $n
+                    export PS3=$psBAK
+                    unset subMenus
+                    break
+                    unset n
+                    ;;
+                "Back")
+                    export PS3=$psBAK
+                    unset subMenus
+                    break;
+                    ;;
+                ,*)
+                    echo "Unknown option $SUB"
+                    ;;
+            esac
+        done
+
+    }
+#+END_SRC
+
+#+NAME: rename
+#+BEGIN_SRC bash :eval no :tangle no :export no
+  function rename {
+      if [ -z $1 ]; then
+          >&2 echo "Error rename called without arguments."
+          return 1
+      fi
+
+      declare n
+      while true; do
+          echo -n "New name: "
+          read n
+          if [ ! -e $n ]; then
+              break;
+          fi
+      done
+
+      eval "mv -v $1 $n"
+      if [[ $? > 0 ]]; then
+          echo "Error in eval"
+          return 2
+      fi
+      return 0
+  }
+#+END_SRC
+
+#+NAME: createFile2
+#+BEGIN_SRC bash :eval no :tangle no :export no
+  function createFile {
+      if [ -z $1 ]; then
+          >&2 echo "Error create file called without arguments."
+          return 1
+      fi
+
+      if [ -e $1 ]; then
+          >&2 echo "Error name exists."
+          return 2
+      fi
+
+      eval "touch $1"
+      if [[ $? > 0 ]]; then
+          echo "Error in eval"
+          return 3
+      fi
+      return 0
+  }
+#+END_SRC
+
+#+NAME: createDirectory2
+#+BEGIN_SRC bash :eval no :tangle no :export no
+  function createDirectory {
+      if [ -z $1 ]; then
+          >&2 echo "Error create directory called without arguments."
+          return 1
+      fi
+
+      if [ -d $1 ]; then
+          >&2 echo "Error directory exists."
+          return 2
+      fi
+
+      eval "mkdir -vp $1"
+      if [[ $? > 0 ]]; then
+          echo "Error in eval"
+          return 3
+      fi
+      return 0
+  }
+#+END_SRC
+
+#+NAME: exitDirectory2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function exitDirectory {
+      popd >/dev/null # pop the top of the stack
+  }
+
+#+END_SRC
+
+#+NAME: enterDirectory2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function enterDirectory {
+      dir=$1
+      if [ -d $dir ]; then
+          pushd $dir >/dev/null
+          return 0
+      fi
+      return 1
+  }
+
+#+END_SRC
+
+#+NAME: removeDirectory2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function removeDirectory {
+      dir=$1
+      if [ ! -d $dir ]; then
+          ## This should not happen
+          return 1
+      fi
+      ## Check if dir is empty
+      cCount=$(ls -A $dir | wc -l)
+      if [[ $cCount > 0 ]]; then
+          >&2 echo "Error $dir is not empty."
+          return 1
+      fi
+      eval "rmdir -v $dir"
+      res=$?
+      if [[ $res > 0 ]]; then
+          echo "Eval return $res"
+          unset res
+          return 1
+      fi
+      return 0
+  }
+#+END_SRC
+
+#+NAME: removeFile2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function removeFile {
+      if [ -z $1 ]; then
+          >&2 echo "Error removeFile called without arguments."
+          return 1
+      fi
+
+      echo -e "\e[33mWARNING This will really delete the file.\e[0m"
+      eval "rm -iv $1"
+      if [[ $? > 0 ]]; then
+          echo "Error in eval."
+          return 2
+      fi
+      return 0
+  }
+#+END_SRC
+
+#+NAME: QUIT2
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
+  function Quit {
+      echo "Cleaning up."
+      unset  enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit mainMenu
+      PS3=oldPS3
+      unset oldPS3
+      exit 0
+  }
+#+END_SRC
+
