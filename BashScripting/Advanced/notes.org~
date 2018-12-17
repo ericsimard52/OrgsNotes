@@ -240,7 +240,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 
    Functions can return integer only. Attempt to return otherwise results in error.
-   #+BEGIN_SRC bash :results output :exports code :tangle funcReturn.sh :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle funcReturn.sh :tangle-mode (identity #o0755)
      #!/bin/bash
 
      function myFunction { # note the space
@@ -314,7 +314,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
    So what if I need to return a string.
    In a sense you can pass a variable by reference and modify that variable inside a function.
-   #+BEGIN_SRC bash :results output :exports code :tangle funcRefVar.sh :tangle-mode (identity #o0755)
+   #+BEGIN_SRC bash :results output :export code :tangle funcRefVar.sh :tangle-mode (identity #o0755)
      #!/bin/bash
 
      declare var
@@ -332,7 +332,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    : Hello world
 
    Functions cannot be empty
-   #+BEGIN_SRC bash :results output :exports code :tangle emptyFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle emptyFunc.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      ## This will prevent execution
@@ -1284,7 +1284,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_03.html
    Yes case statement works with strings.
    Structure
-   #+BEGIN_SRC bash :results output :exports none
+   #+BEGIN_SRC bash :results output :export none
 
       case EXPR in
           opt1)
@@ -1303,7 +1303,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       Export the code section with C-u C-c C-v t
       Then proceed to execute simpleCase.sh
     :END:
-   #+BEGIN_SRC bash :results output :exports code :tangle simpleCase.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle simpleCase.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
      echo -n "Press a number between 0 - 9 or 567 or anything else or 76."
      read val # Reads user input and store in $val. More on read later.
@@ -1347,7 +1347,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      ...
    done
    Example: Loop through an array
-   #+BEGIN_SRC bash :results output :exports code :tangle forLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle forLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      declare -a myArray=(1 2 4 3 5 6 7)
@@ -1358,16 +1358,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
-   : 1
-   : 2
-   : 4
-   : 3
-   : 5
-   : 6
-   : 7
 
    Example: Loop through arguments supply on the command line.
-   #+BEGIN_SRC bash :results output :exports code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3 2>&1
      #!/bin/bash
 
      argsLen=${#@}
@@ -1382,16 +1375,12 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
-   : Arguments length: 3
-   : arg1
-   : myarg
-   : 3
 
 ** While loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
 
    Example: Loop through an array
-   #+BEGIN_SRC bash :results output :exports code :tangle whileLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle whileLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      declare -a myArray=(1 2 4 3 5 6 7)
@@ -1414,29 +1403,12 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
-   #+begin_example
-   arrLen: 7
-   1
-   2
-   4
-   3
-   5
-   6
-   7
-   1
-   2
-   4
-   3
-   5
-   6
-   7
-   #+end_example
 
 ** until loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_03.html
 
    Until loop is very similar to while except that it execute until the test resolves true.
-   #+BEGIN_SRC bash :results output :exports code :tangle untilLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+   #+BEGIN_SRC bash :results output :export code :tangle untilLoop.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
 
      myArray=(1 2 3 4 5 6 7 8 9 0)
@@ -1449,18 +1421,6 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
-   #+begin_example
-   1
-   2
-   3
-   4
-   5
-   6
-   7
-   8
-   9
-   0
-   #+end_example
 
 ** IO redirection and loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_04.html
@@ -1475,26 +1435,25 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     Help for the read command will display in #+RESULTS:
     :END:
     #+NAME helpRead
-    #+BEGIN_SRC bash :results output :exports none :tangle no :epiloge "read --help"
+    #+BEGIN_SRC bash :results output :export none :tangle no :epiloge "read --help"
     #!/bin/bash
     cat - < <(read --help)
     #+END_SRC
 
     #+RESULTS:
 
-    #+BEGIN_SRC bash :results output :exports code :tangle ioLoop1.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       # First lets create a file with multiple lines of content.
+      # This command is risk free, running find on the root folder as normal user will generate stdout and stderr.
       destFile=/tmp/tmpFile # change if you wish.
       touch $destFile #Create the file.
-      # I redirect the output stderr and stdout  into a file
-
-      find / -name sys* > $destFile 2>&1
-
       lineCount=0
+      # I redirect the output into a file
+      find / -name sys* > $destFile
 
-      # Now read the file and prints the line count.
+      # Now read the file and print each line,
       # -r, If there are \, do not allow it to escape any character
       while read -r line; do
           ((lineCount++))
@@ -1511,13 +1470,11 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
-    : I got 7229 lines in /tmp/tmpFile
-    : I got 5892 lines in /tmp/tmpFile
 
 ** Break and continue
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_05.html
 *** Break is used to stop a loop before its normal ending.
-    #+BEGIN_SRC bash :results output :exports code :tangle userBreak.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle userBreak.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       function processCmd {
@@ -1536,7 +1493,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
           case $u in
               quit)
                   # Enter the command exit will also cause the loop to break.
-                  break
+                  break 
                   ;;
               ,*)
                   processCmd $u
@@ -1553,7 +1510,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     They also act the same for select loop which will be seen later.
     When used in a for loop, the controlling variable takes on the value of the next element in the list.
     When used in a while or until construct, execution resumes with TEST-COMMAND at the top of the loop.
-    #+BEGIN_SRC bash :results output :exports code :tangle contLoop.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle contLoop.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       declare -a myArr=(1 2 3 4 5 6 7)
@@ -1566,11 +1523,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       done
     #+END_SRC
 
-
     Due to the different behavior of continue with while loop, the following code block enter an infinit loop.
     If you eval this code through emacs (C-c C-c), it will seem like emacs hangs. Press C-g to quit execution.
     I recommend exporting the code before execution or modify it to not loop infinitly.
-    #+BEGIN_SRC bash :results output :exports code :tangle contInfinit.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle contInfinit.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
       declare -a myArr=(1 2 3 4 5 6 7)
@@ -1581,7 +1537,6 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       while [[ $x < ${#myArr[@]} ]]; do
           if [[ $x = 3 ]]; then
               echo "x=$x, sending continue"
-              #((x++)) # without this the loop is infinit. continue in a while loop does not move the the next item.
               continue;
           fi
           echo "x=$x, all is normal"
@@ -1592,13 +1547,13 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
-    : x=0, all is normal
     : x=1, all is normal
     : x=2, all is normal
     : x=3, sending continue
     : x=4, all is normal
     : x=5, all is normal
     : x=6, all is normal
+    : x=7, all is normal
 
 
 
@@ -1607,8 +1562,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   Arguments are access from $1 ...
 
   Example of looping through arguments with for loop.
-
-  #+BEGIN_SRC bash :results output :exports code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 2>&1
+  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 2>&1
     #!/bin/bash
 
     for i in $@; do
@@ -1618,14 +1572,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   #+END_SRC
 
   #+RESULTS:
-  : myArg1
-  : myArg2
-  : my
-  : arg3
 
   With a while
 
-  #+BEGIN_SRC bash :results output :exports code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline hello how are you 2>&1
+  #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline hello how are you 2>&1
     #!/bin/bash
     x=0
     args=($@) # Assign arguments into array, separated by space.
@@ -1633,25 +1583,20 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         echo ${args[$x]}
         ((x++))
     done
-
+    
   #+END_SRC
 
   #+RESULTS:
-  : hello
-  : how
-  : are
-  : you
 
 ** How to implement linux style arguments into my scripts.
    There are a few way that are considered commons.
 
 *** Space separated
     Usage: script -{short option} {value} --{long option} {value}
-    This does not handle combined options
-    #+BEGIN_SRC bash :results output :exports code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test 2>&1
       #!/bin/bash
 
-      declare option file debug
+      declare option file
       ## This technique uses a key, value technique.
       ## It handles short and long options.
       while [[ $# > 0 ]]; do
@@ -1666,52 +1611,6 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                   file="$2"
                   shift 2
                   ;;
-              -d| --debug)
-                  debug=1
-                  shift ## debug does not take an argument, we only shift 1 item.
-                  ;;
-              ,*)
-                  echo "Unkown option $key"
-                  shift
-                  ;;
-          esac
-      done
-      echo "Done passing arguments."
-      echo "Option: $option"
-      echo "File: $file"
-      echo "Debug: $debug"
-    #+END_SRC
-
-    #+RESULTS:
-    : Unkown option -do
-    : Unkown option rw,ext4,0755
-    : Done passing arguments.
-    : Option: 
-    : File: /tmp/test
-    : Debug: 
-
-*** = Separated
-    Usage: script -{short option}={value} --{long option}={value}
-    Does not handles combined options.
-    #+BEGIN_SRC bash :results output :exports code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test 2>&1
-      #!/bin/bash
-
-      declare option file
-      ## It handles short and long options.
-      for i in "$@"; do
-          case $i in
-              -o=*|--option=*)
-                  option="${i#*=}"
-                  shift
-                  ;;
-              -f=*|--file=*)
-                  file="${i#*=}"
-                  shift
-                  ;;
-              ,*)
-                  echo "Unkown option $i"
-                  shift
-                  ;;
           esac
       done
       echo "Done passing arguments."
@@ -1724,6 +1623,33 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     : Option: rw,ext4,0755
     : File: /tmp/test
 
+*** = Separated
+    Usage: script -{short option}={value} --{long option}={value}
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test 2>&1
+      #!/bin/bash
+
+      declare option file
+      ## This technique uses a key, value technique.
+      ## It handles short and long options.
+      for i in "$@"; do
+          case $i in
+              -o=*|--option=*)
+                  option="${i#*=}"
+                  shift
+                  ;;
+              -f=*|--file=*)
+                  file="${i#*=}"
+                  shift
+                  ;;
+          esac
+      done
+      echo "Done passing arguments."
+      echo "Option: $option"
+      echo "File: $file"
+    #+END_SRC
+
+    #+RESULTS:
+
 *** With getopts
     Note: Getopts handles only short options.
     Note: Handles chained options like: -vfo
@@ -1734,7 +1660,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 **** Usage
     Getopts is a bash builtin. optstring contains the option char to look for. Example, "ofg" means we are looking for short options -o -f -g or any combination -go or -fgo ...
-    #+BEGIN_SRC bash :results output :exports code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
 
       while getopts "ofg" opt; do
@@ -1743,17 +1669,17 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
-    : /tmp/babel-16833Kcr/sh-script-16833WD1: illegal option -- x
-    : ?
     : o
+    : g
+    : f
 
     If a character is followed by a colon, the option is expected to have an argument.
     In such case, getopts places the argument in variable OPTARG
-    #+BEGIN_SRC bash :results output :exports code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
-      # In this example, option f is expected to have an argument.
+      # In this example, option f is expected to have an argument. The option and the argument needs to be separated by a whitespace.
       while getopts "of:g" opt; do
           case $opt in
               f)
@@ -1776,7 +1702,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     Everytime it is invoke, getops places the next option into variable and the index of the next argument to be processed in OPTIND.
     While OPTIND will be set to 1 everytime the shell script is involved, it does not reset itself automatically.
     If you are to call getopts multiple time, OPTIND has to be reset manually.
-    #+BEGIN_SRC bash :results output :exports code :tangle getoptsOPTIND.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTIND.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1833,7 +1759,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      By default, error message are printed when invalid options or missing options args.
 
      This script does not supply an argument for option f, getopts will display error message.
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsErr.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErr.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1861,11 +1787,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
-     : /tmp/babel-16833Kcr/sh-script-16833jiX: option requires an argument -- f
-     : Options: fVal: oVal:1 gVal:gVal
 
      If the first char in optstring is a colon, silent mode is used:
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1893,10 +1817,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
-     : Options: fVal: oVal:1 gVal:gVal
 
      If the variable OPTERR is set to 0, no error message will be printed.
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
@@ -1924,11 +1847,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
-     : Options: fVal: oVal:1 gVal:gVal
 
      When an invalid options is found, the value ? is place in name, OPTARG is unset and a diagnostic message is printed by getopts
      This code block will supply an invalid option x
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsInvalidOpt.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOpt.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -1960,13 +1882,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
-     : /tmp/babel-16833Kcr/sh-script-16833WfF: illegal option -- x
-     : Invalid option detected, getopts will display an error message to.
-     : opt = ?
-     : OPTARG = 
 
      If getopts is in silent mode, OPTARG is set to the option char found.
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -1999,13 +1917,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
-     : Invalid option detected, getopts will NOT display an error message.
-     : opt = ?
-     : OPTARG = x
-     : Option x is not a valid one.
 
      If a required argument is missing and getopts is NOT silent, ? is placed in name, OPTARG is unset and diagnostic message is printed.
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -2029,7 +1943,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                    echo "OPTARG = $OPTARG"
                    echo "Option $OPTARG requires an argument."
                    ;;
-               ,*)
+               *)
                    # Unknown option
                    ;;
            esac
@@ -2038,13 +1952,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
-     : Missing argument detected, getopts will display an error message.
-     : opt = ?
-     : OPTARG = 
-     : Option  requires an argument.
 
      If a required argument is missing and getopts is silent, : is placed in name, OPTARG is set to the option found and diagnostic message is NOT printed.
-     #+BEGIN_SRC bash :results output :exports code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+     #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
        #!/bin/bash
        declare fVal oVal=0 gVal=0
 
@@ -2077,10 +1987,6 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
-     : Missing argument detected, getopts will NOT display an error message.
-     : opt = :
-     : OPTARG = f
-     : Option f requires an argument.
 
 
 
@@ -2096,7 +2002,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
   LIST is expanded and a list of items is generated from it. The expansion is printed to stderr
   Due to the interactive nature of this code, it must be exported C-u C-c C-v t
-  #+BEGIN_SRC bash :results output :exports code :tangle simpleSelect.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+  #+BEGIN_SRC bash :results output :export code :tangle simpleSelect.sh :tangle-mode (identity #o0755) :cmdline 2>&1
     #!/bin/bash
 
     # The following script will give you a menu of all the directory in your home directory.
@@ -2116,7 +2022,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 ** Submenus
    Nested select statement creates submenus
    Due to the interactive nature of this code, it must be exported C-u C-c C-v t
-  #+BEGIN_SRC bash :results output :exports code :tangle selectSubMenu.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+  #+BEGIN_SRC bash :results output :export code :tangle selectSubMenu.sh :tangle-mode (identity #o0755) :cmdline 2>&1
     #!/bin/bash
 
     # The following script will give you a menu with the content of your home directory.
@@ -2201,7 +2107,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: Main
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :export no
   ###
   # To allow for our enterDirectory function to have a "Up" feature. Our directory stack need to have every part from the root folder.
   # If we don't, the script will be restricted to the current directory and below.
@@ -2262,13 +2168,13 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: scriptHeader
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   declare -f enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit
   declare -a mainMenu=("List Content" "Enter Directory" "Create File" "Create Directory" "Remove File" "Remove Directory" "Quit")
 #+END_SRC
 
 #+NAME: exitDirectory
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function exitDirectory {
       popd >/dev/null # pop the top of the stack
   }
@@ -2276,7 +2182,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: enterDirectory
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function enterDirectory {
       select DIR in "UP" */ "Back"; do
           case $DIR in
@@ -2298,7 +2204,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: listContent
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   # Called without arguments, list the content in current directory
   # Called with an argument, list the content if arg is directory
   # Complains if arg is otherwise.
@@ -2320,7 +2226,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: createDirectory
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function createDirectory {
       echo -n "Enter directory name: "
       read n # read user input into var n
@@ -2341,7 +2247,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: removeDirectory
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function removeDirectory {
       select file in * "QUIT"; do
           if [[ "$file" == "QUIT" ]]; then
@@ -2377,7 +2283,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: createFile
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function createFile {
       echo -n "Enter file name: "
       read n # read user input into var n
@@ -2398,7 +2304,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: removeFile
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function removeFile {
       select file in * "QUIT"; do
           if [[ "$file" == "QUIT" ]]; then
@@ -2430,7 +2336,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: QUIT
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function Quit {
       echo "Cleaning up."
       unset  enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit mainMenu
@@ -2481,7 +2387,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: scriptHeader2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   declare -f enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit
   ## Simple hack to display colored item in select.
   declare -a mainMenu=("Reload" "Create" "Quit" "..")
@@ -2492,7 +2398,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: Main2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :noweb strip-export :export no
   ###
   # To allow for our enterDirectory function to have a "Up" feature. Our directory stack need to have every part from the root folder.
   # If we don't, the script will be restricted to the current directory and below.
@@ -2554,7 +2460,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME:enableSub
-#+BEGIN_SRC bash :eval no :tangle no :exports no
+#+BEGIN_SRC bash :eval no :tangle no :export no
   function enableSub {
         declare psBAK=$PS3
         declare -a subMenus
@@ -2615,7 +2521,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME:createSub
-#+BEGIN_SRC bash :eval no :tangle no :exports no
+#+BEGIN_SRC bash :eval no :tangle no :export no
     function createSub {
         declare psBAK=$PS3
         declare -a subMenus
@@ -2656,7 +2562,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: rename
-#+BEGIN_SRC bash :eval no :tangle no :exports no
+#+BEGIN_SRC bash :eval no :tangle no :export no
   function rename {
       if [ -z $1 ]; then
           >&2 echo "Error rename called without arguments."
@@ -2682,7 +2588,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: createFile2
-#+BEGIN_SRC bash :eval no :tangle no :exports no
+#+BEGIN_SRC bash :eval no :tangle no :export no
   function createFile {
       if [ -z $1 ]; then
           >&2 echo "Error create file called without arguments."
@@ -2704,7 +2610,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: createDirectory2
-#+BEGIN_SRC bash :eval no :tangle no :exports no
+#+BEGIN_SRC bash :eval no :tangle no :export no
   function createDirectory {
       if [ -z $1 ]; then
           >&2 echo "Error create directory called without arguments."
@@ -2726,7 +2632,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: exitDirectory2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function exitDirectory {
       popd >/dev/null # pop the top of the stack
   }
@@ -2734,7 +2640,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: enterDirectory2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function enterDirectory {
       dir=$1
       if [ -d $dir ]; then
@@ -2747,7 +2653,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: removeDirectory2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function removeDirectory {
       dir=$1
       if [ ! -d $dir ]; then
@@ -2772,7 +2678,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: removeFile2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function removeFile {
       if [ -z $1 ]; then
           >&2 echo "Error removeFile called without arguments."
@@ -2790,7 +2696,7 @@ The project will also export when exporting all code block.
 #+END_SRC
 
 #+NAME: QUIT2
-#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :exports no
+#+BEGIN_SRC bash :eval no :tangle no :tangle-mode (identity #o0755) :export no
   function Quit {
       echo "Cleaning up."
       unset  enterDir existDir listContent createFile removeFile createDirectory removeDirectory Quit mainMenu
