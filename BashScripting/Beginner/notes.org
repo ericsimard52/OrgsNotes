@@ -1747,7 +1747,6 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       #!/bin/bash
 
       declare option file
-      ## This technique uses a key, value technique.
       ## It handles short and long options.
       for i in "$@"; do
           case $i in
@@ -1771,6 +1770,9 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : Done passing arguments.
+    : Option: rw,ext4,0755
+    : File: /tmp/test
 
 *** With getopts
     Note: Getopts handles only short options.
@@ -1782,7 +1784,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
 
 **** Usage
     Getopts is a bash builtin. optstring contains the option char to look for. Example, "ofg" means we are looking for short options -o -f -g or any combination -go or -fgo ...
-    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsSimple.sh  :tangle-mode (identity #o0755) :cmdline -x -o 2>&1
       #!/bin/bash
 
       while getopts "ofg" opt; do
@@ -1791,17 +1793,17 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : /tmp/babel-16833Kcr/sh-script-16833WD1: illegal option -- x
+    : ?
     : o
-    : g
-    : f
 
     If a character is followed by a colon, the option is expected to have an argument.
     In such case, getopts places the argument in variable OPTARG
-    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f /var/log/syslog 2>&1
+    #+BEGIN_SRC bash :results output :export code :tangle getoptsWithArgs.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f  /var/log/syslog 2>&1
       #!/bin/bash
       declare fVal oVal=0 gVal=0
 
-      # In this example, option f is expected to have an argument. The option and the argument needs to be separated by a whitespace.
+      # In this example, option f is expected to have an argument.
       while getopts "of:g" opt; do
           case $opt in
               f)
@@ -1909,6 +1911,8 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     : /tmp/babel-16833Kcr/sh-script-16833jiX: option requires an argument -- f
+     : Options: fVal: oVal:1 gVal:gVal
 
      If the first char in optstring is a colon, silent mode is used:
      #+BEGIN_SRC bash :results output :export code :tangle getoptsErrSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
@@ -1939,6 +1943,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     : Options: fVal: oVal:1 gVal:gVal
 
      If the variable OPTERR is set to 0, no error message will be printed.
      #+BEGIN_SRC bash :results output :export code :tangle getoptsOPTERR.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
@@ -1969,6 +1974,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     : Options: fVal: oVal:1 gVal:gVal
 
      When an invalid options is found, the value ? is place in name, OPTARG is unset and a diagnostic message is printed by getopts
      This code block will supply an invalid option x
@@ -2004,6 +2010,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
      #+RESULTS:
+     : /tmp/babel-16833Kcr/sh-script-16833WfF: illegal option -- x
+     : Invalid option detected, getopts will display an error message to.
+     : opt = ?
+     : OPTARG = 
 
      If getopts is in silent mode, OPTARG is set to the option char found.
      #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -x 2>&1
@@ -2039,6 +2049,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     : Invalid option detected, getopts will NOT display an error message.
+     : opt = ?
+     : OPTARG = x
+     : Option x is not a valid one.
 
      If a required argument is missing and getopts is NOT silent, ? is placed in name, OPTARG is unset and diagnostic message is printed.
      #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptNotSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
@@ -2065,7 +2079,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                    echo "OPTARG = $OPTARG"
                    echo "Option $OPTARG requires an argument."
                    ;;
-               *)
+               ,*)
                    # Unknown option
                    ;;
            esac
@@ -2074,6 +2088,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     : Missing argument detected, getopts will display an error message.
+     : opt = ?
+     : OPTARG = 
+     : Option  requires an argument.
 
      If a required argument is missing and getopts is silent, : is placed in name, OPTARG is set to the option found and diagnostic message is NOT printed.
      #+BEGIN_SRC bash :results output :export code :tangle getoptsInvalidOptSilent.sh  :tangle-mode (identity #o0755) :cmdline -o -g -f 2>&1
@@ -2109,6 +2127,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
      #+END_SRC
 
      #+RESULTS:
+     : Missing argument detected, getopts will NOT display an error message.
+     : opt = :
+     : OPTARG = f
+     : Option f requires an argument.
 
 
 
