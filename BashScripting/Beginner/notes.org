@@ -1358,6 +1358,13 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : 1
+   : 2
+   : 4
+   : 3
+   : 5
+   : 6
+   : 7
 
    Example: Loop through arguments supply on the command line.
    #+BEGIN_SRC bash :results output :exports code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3 2>&1
@@ -1375,6 +1382,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : Arguments length: 3
+   : arg1
+   : myarg
+   : 3
 
 ** While loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
@@ -1403,6 +1414,23 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   #+begin_example
+   arrLen: 7
+   1
+   2
+   4
+   3
+   5
+   6
+   7
+   1
+   2
+   4
+   3
+   5
+   6
+   7
+   #+end_example
 
 ** until loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_03.html
@@ -1421,6 +1449,18 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   #+begin_example
+   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+   0
+   #+end_example
 
 ** IO redirection and loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_04.html
@@ -1446,14 +1486,15 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       #!/bin/bash
 
       # First lets create a file with multiple lines of content.
-      # This command is risk free, running find on the root folder as normal user will generate stdout and stderr.
       destFile=/tmp/tmpFile # change if you wish.
       touch $destFile #Create the file.
-      lineCount=0
-      # I redirect the output into a file
-      find / -name sys* > $destFile
+      # I redirect the output stderr and stdout  into a file
 
-      # Now read the file and print each line,
+      find / -name sys* > $destFile 2>&1
+
+      lineCount=0
+
+      # Now read the file and prints the line count.
       # -r, If there are \, do not allow it to escape any character
       while read -r line; do
           ((lineCount++))
@@ -1470,6 +1511,8 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : I got 7229 lines in /tmp/tmpFile
+    : I got 5892 lines in /tmp/tmpFile
 
 ** Break and continue
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_05.html
@@ -1493,7 +1536,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
           case $u in
               quit)
                   # Enter the command exit will also cause the loop to break.
-                  break 
+                  break
                   ;;
               ,*)
                   processCmd $u
@@ -1523,6 +1566,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       done
     #+END_SRC
 
+
     Due to the different behavior of continue with while loop, the following code block enter an infinit loop.
     If you eval this code through emacs (C-c C-c), it will seem like emacs hangs. Press C-g to quit execution.
     I recommend exporting the code before execution or modify it to not loop infinitly.
@@ -1537,6 +1581,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       while [[ $x < ${#myArr[@]} ]]; do
           if [[ $x = 3 ]]; then
               echo "x=$x, sending continue"
+              #((x++)) # without this the loop is infinit. continue in a while loop does not move the the next item.
               continue;
           fi
           echo "x=$x, all is normal"
@@ -1547,13 +1592,13 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : x=0, all is normal
     : x=1, all is normal
     : x=2, all is normal
     : x=3, sending continue
     : x=4, all is normal
     : x=5, all is normal
     : x=6, all is normal
-    : x=7, all is normal
 
 
 
@@ -1562,6 +1607,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   Arguments are access from $1 ...
 
   Example of looping through arguments with for loop.
+
   #+BEGIN_SRC bash :results output :exports code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 2>&1
     #!/bin/bash
 
@@ -1572,6 +1618,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   #+END_SRC
 
   #+RESULTS:
+  : myArg1
+  : myArg2
+  : my
+  : arg3
 
   With a while
 
@@ -1583,20 +1633,25 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         echo ${args[$x]}
         ((x++))
     done
-    
+
   #+END_SRC
 
   #+RESULTS:
+  : hello
+  : how
+  : are
+  : you
 
 ** How to implement linux style arguments into my scripts.
    There are a few way that are considered commons.
 
 *** Space separated
     Usage: script -{short option} {value} --{long option} {value}
+    This does not handle combined options
     #+BEGIN_SRC bash :results output :exports code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test 2>&1
       #!/bin/bash
 
-      declare option file
+      declare option file debug
       ## This technique uses a key, value technique.
       ## It handles short and long options.
       while [[ $# > 0 ]]; do
@@ -1611,20 +1666,33 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                   file="$2"
                   shift 2
                   ;;
+              -d| --debug)
+                  debug=1
+                  shift ## debug does not take an argument, we only shift 1 item.
+                  ;;
+              ,*)
+                  echo "Unkown option $key"
+                  shift
+                  ;;
           esac
       done
       echo "Done passing arguments."
       echo "Option: $option"
       echo "File: $file"
+      echo "Debug: $debug"
     #+END_SRC
 
     #+RESULTS:
+    : Unkown option -do
+    : Unkown option rw,ext4,0755
     : Done passing arguments.
-    : Option: rw,ext4,0755
+    : Option: 
     : File: /tmp/test
+    : Debug: 
 
 *** = Separated
     Usage: script -{short option}={value} --{long option}={value}
+    Does not handles combined options.
     #+BEGIN_SRC bash :results output :exports code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test 2>&1
       #!/bin/bash
 
@@ -1639,6 +1707,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                   ;;
               -f=*|--file=*)
                   file="${i#*=}"
+                  shift
+                  ;;
+              ,*)
+                  echo "Unkown option $i"
                   shift
                   ;;
           esac
