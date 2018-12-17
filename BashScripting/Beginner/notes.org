@@ -1358,6 +1358,13 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : 1
+   : 2
+   : 4
+   : 3
+   : 5
+   : 6
+   : 7
 
    Example: Loop through arguments supply on the command line.
    #+BEGIN_SRC bash :results output :export code :tangle loopArgs.sh :tangle-mode (identity #o0755) :cmdline arg1 myarg 3 2>&1
@@ -1375,6 +1382,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   : Arguments length: 3
+   : arg1
+   : myarg
+   : 3
 
 ** While loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_02.html
@@ -1403,6 +1414,23 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   #+begin_example
+   arrLen: 7
+   1
+   2
+   4
+   3
+   5
+   6
+   7
+   1
+   2
+   4
+   3
+   5
+   6
+   7
+   #+end_example
 
 ** until loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_03.html
@@ -1421,6 +1449,18 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
    #+END_SRC
 
    #+RESULTS:
+   #+begin_example
+   1
+   2
+   3
+   4
+   5
+   6
+   7
+   8
+   9
+   0
+   #+end_example
 
 ** IO redirection and loop
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_04.html
@@ -1441,19 +1481,65 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    #+begin_example
+    read: read [-ers] [-a array] [-d delim] [-i text] [-n nchars] [-N nchars] [-p prompt] [-t timeout] [-u fd] [name ...]
+        Read a line from the standard input and split it into fields.
 
-    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
+        Reads a single line from the standard input, or from file descriptor FD
+        if the -u option is supplied.  The line is split into fields as with word
+        splitting, and the first word is assigned to the first NAME, the second
+        word to the second NAME, and so on, with any leftover words assigned to
+        the last NAME.  Only the characters found in $IFS are recognized as word
+        delimiters.
+
+        If no NAMEs are supplied, the line read is stored in the REPLY variable.
+
+        Options:
+          -a array	assign the words read to sequential indices of the array
+            variable ARRAY, starting at zero
+          -d delim	continue until the first character of DELIM is read, rather
+            than newline
+          -e	use Readline to obtain the line in an interactive shell
+          -i text	use TEXT as the initial text for Readline
+          -n nchars	return after reading NCHARS characters rather than waiting
+            for a newline, but honor a delimiter if fewer than
+            NCHARS characters are read before the delimiter
+          -N nchars	return only after reading exactly NCHARS characters, unless
+            EOF is encountered or read times out, ignoring any
+            delimiter
+          -p prompt	output the string PROMPT without a trailing newline before
+            attempting to read
+          -r	do not allow backslashes to escape any characters
+          -s	do not echo input coming from a terminal
+          -t timeout	time out and return failure if a complete line of
+            input is not read within TIMEOUT seconds.  The value of the
+            TMOUT variable is the default timeout.  TIMEOUT may be a
+            fractional number.  If TIMEOUT is 0, read returns
+            immediately, without trying to read any data, returning
+            success only if input is available on the specified
+            file descriptor.  The exit status is greater than 128
+            if the timeout is exceeded
+          -u fd	read from file descriptor FD instead of the standard input
+
+        Exit Status:
+        The return code is zero, unless end-of-file is encountered, read times out
+        (in which case it's greater than 128), a variable assignment error occurs,
+        or an invalid file descriptor is supplied as the argument to -u.
+    #+end_example
+
+    #+BEGIN_SRC bash :results output :export code :tangle ioLoop1.sh  :tangle-mode (identity #o0755)
       #!/bin/bash
 
       # First lets create a file with multiple lines of content.
-      # This command is risk free, running find on the root folder as normal user will generate stdout and stderr.
       destFile=/tmp/tmpFile # change if you wish.
       touch $destFile #Create the file.
-      lineCount=0
-      # I redirect the output into a file
-      find / -name sys* > $destFile
+      # I redirect the output stderr and stdout  into a file
 
-      # Now read the file and print each line,
+      find / -name sys* > $destFile 2>&1
+
+      lineCount=0
+
+      # Now read the file and prints the line count.
       # -r, If there are \, do not allow it to escape any character
       while read -r line; do
           ((lineCount++))
@@ -1470,6 +1556,8 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : I got 7229 lines in /tmp/tmpFile
+    : I got 5892 lines in /tmp/tmpFile
 
 ** Break and continue
    http://tldp.org/LDP/Bash-Beginners-Guide/html/sect_09_05.html
@@ -1493,7 +1581,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
           case $u in
               quit)
                   # Enter the command exit will also cause the loop to break.
-                  break 
+                  break
                   ;;
               ,*)
                   processCmd $u
@@ -1523,9 +1611,16 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       done
     #+END_SRC
 
-    Due to the different behavior of continue with while loop, the following code block enter an infinit loop.
-    If you eval this code through emacs (C-c C-c), it will seem like emacs hangs. Press C-g to quit execution.
-    I recommend exporting the code before execution or modify it to not loop infinitly.
+    #+RESULTS:
+    : x=1, all is normal
+    : x=2, all is normal
+    : x=3, sending continue
+    : x=4, all is normal
+    : x=5, all is normal
+    : x=6, all is normal
+    : x=7, all is normal
+
+    Here is an example with a while loop. Note that by commenting a single line, this loop will become infinite.
     #+BEGIN_SRC bash :results output :export code :tangle contInfinit.sh  :tangle-mode (identity #o0755) :cmdline 2>&1
       #!/bin/bash
 
@@ -1537,6 +1632,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
       while [[ $x < ${#myArr[@]} ]]; do
           if [[ $x = 3 ]]; then
               echo "x=$x, sending continue"
+              #((x++)) # without this the loop is infinit. continue in a while loop does not move the the next item.
               continue;
           fi
           echo "x=$x, all is normal"
@@ -1547,13 +1643,13 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
     #+END_SRC
 
     #+RESULTS:
+    : x=0, all is normal
     : x=1, all is normal
     : x=2, all is normal
     : x=3, sending continue
     : x=4, all is normal
     : x=5, all is normal
     : x=6, all is normal
-    : x=7, all is normal
 
 
 
@@ -1562,7 +1658,7 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   Arguments are access from $1 ...
 
   Example of looping through arguments with for loop.
-  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 2>&1
+  #+BEGIN_SRC bash :results output :export code :tangle argsForLoop.sh  :tangle-mode (identity #o0755) :cmdline myArg1 myArg2 my arg3 2>&1
     #!/bin/bash
 
     for i in $@; do
@@ -1572,6 +1668,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
   #+END_SRC
 
   #+RESULTS:
+  : myArg1
+  : myArg2
+  : my
+  : arg3
 
   With a while
 
@@ -1583,20 +1683,25 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
         echo ${args[$x]}
         ((x++))
     done
-    
+
   #+END_SRC
 
   #+RESULTS:
+  : hello
+  : how
+  : are
+  : you
 
 ** How to implement linux style arguments into my scripts.
    There are a few way that are considered commons.
 
 *** Space separated
     Usage: script -{short option} {value} --{long option} {value}
-    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o rw,ext4,0755 --file /tmp/test 2>&1
+    This does not handle combined options
+    #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -d o rw,ext4,0755 --file /tmp/test  2>&1
       #!/bin/bash
 
-      declare option file
+      declare option file debug
       ## This technique uses a key, value technique.
       ## It handles short and long options.
       while [[ $# > 0 ]]; do
@@ -1611,20 +1716,33 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                   file="$2"
                   shift 2
                   ;;
+              -d| --debug)
+                  debug=1
+                  shift ## debug does not take an argument, we only shift 1 item.
+                  ;;
+              ,*)
+                  echo "Unkown option $key"
+                  shift
+                  ;;
           esac
       done
       echo "Done passing arguments."
       echo "Option: $option"
       echo "File: $file"
+      echo "Debug: $debug"
     #+END_SRC
 
     #+RESULTS:
+    : Unkown option -do
+    : Unkown option rw,ext4,0755
     : Done passing arguments.
-    : Option: rw,ext4,0755
+    : Option: 
     : File: /tmp/test
+    : Debug: 
 
 *** = Separated
     Usage: script -{short option}={value} --{long option}={value}
+    Does not handles combined options.
     #+BEGIN_SRC bash :results output :export code :tangle argsWhileLoop.sh  :tangle-mode (identity #o0755) :cmdline -o=rw,ext4,0755 --file=/tmp/test 2>&1
       #!/bin/bash
 
@@ -1639,6 +1757,10 @@ Bash for beginner reference: http://tldp.org/LDP/Bash-Beginners-Guide/html/index
                   ;;
               -f=*|--file=*)
                   file="${i#*=}"
+                  shift
+                  ;;
+              ,*)
+                  echo "Unkown option $i"
                   shift
                   ;;
           esac
