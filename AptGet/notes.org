@@ -134,7 +134,6 @@
 
 
 
-
 * Set apt sources
   File is located in /etc/apt/sources.list
   It is also constructed from the files in /etc/apt/sources.list.d
