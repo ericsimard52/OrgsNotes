@@ -4,7 +4,6 @@
   Codes are locates in block beggining with #+BEGIN_SRC & #+END_SRC
 
 
-
 * Intro.
   Most Linux distribution provide a good set of programs that can be installed directly from the local computer.
   Linux has been using "App Store" style of installation for decades we call them repositories (REPO). What I mean by this is that you rarely should have to download from a website when you need a program.
