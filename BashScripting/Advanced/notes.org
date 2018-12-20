@@ -94,6 +94,7 @@ A good source of information: https://tldp.org
    #+END_SRC
 
    #+RESULTS:
+   : 1 2 3
 
 *** Test if variable has been set.
     In a Parameter substitution expression, it can test wheter a variable has been set
@@ -246,30 +247,746 @@ A good source of information: https://tldp.org
   #+END_SRC
 
   #+RESULTS:
+  : Hello world, Bash is hard, have you considered learning python?
 
   We can use parameter substitution to set a default value.
   ${PARAM-DEFAULT}, ${PARAM:-DEFAULT}
   In the above structure if PARAM is not set, DEFAULT is used.
-  #+BEGIN_SRC :results output :exports code
-  
+  #+BEGIN_SRC bash :results output :exports code :tangle defaultParam.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
+
+      declare myFullString part1 part2
+      part1="Hello world, "
+      # This first example demonstrate the ${PARAM-DEFAULT} format, notice that part2 is declare but not set.
+      myFullString=${part1}"Bash is hard, have you considered "${part2-"washing windows?"}
+      echo $myFullString
+
+      part3=
+      # This first example demonstrate the ${PARAM:-DEFAULT} format
+      # notice that part3 has been declared and would be null right now.
+      myFullString=${part1}"Bash is hard, have you considered "${part3-"not giving up"} # This will not echo, part3 is in a sense set to NULL
+      echo $myFullString
+
+      myFullString=${part1}"Bash is hard, have you considered "${part3:-"not giving up"} # This will work
+      echo $myFullString
+
+
+      ## Another variable value can be used.
+      replacement="that it also means it is powerfull"
+      myFullString=${part1}"Bash is hard, have you considered "${part2-$replacement} # Notice the $ before replacement.
+
+      echo $myFullString
   #+END_SRC
 
-* Variable & function
+  #+RESULTS:
+  : Hello world, Bash is hard, have you considered washing windows?
+  : Hello world, Bash is hard, have you considered
+  : Hello world, Bash is hard, have you considered not giving up
+  : Hello world, Bash is hard, have you considered that it also means it is powerfull
 
-* Conditional statement
-** If statement
-*** Test Constructs
-** Case statement
-   We have seen simple case statement in the beginner course.
-   Remember the ;;? it is called a terminator.
-   Case statement can be more elaborate if we include more terminators
+  Another variance exists
+  ${PARAM=DEFAULT}, ${PARAM:=DEFAULT}
+  #+BEGIN_SRC bash :results output :exports code :tangle defaultParamVariation.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
 
-   #+BEGIN_SRC bash :results output :export code :tangle advanceCase.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      declare myFullString part1 part2
+      part1="Hello world, "
+      echo ${part1="Good bye."}
+      echo ${part2="See you soon."}
+  #+END_SRC
+
+  #+RESULTS:x
+  : Hello world,
+  : See you soon.
+
+  Let's do things a little backward shall we?
+  ${PARAM+ALT_VALUE}, ${PARAM:+ALT_VALUE}
+  If PARAM IS set, use ALT_VALUE otherwise, use null string.
+  ':' makes a difference when PARAM has been declared and IS null.
+  #+BEGIN_SRC bash :results output :exports code :tangle paramAltVal.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
+    var1="hello"
+    echo ${var1+"World"} # This will echo World
+    echo ${var2+"World"} # This will echo null
+  #+END_SRC
+
+  #+RESULTS:
+
+  let's not forget the usage from Special char section:
+  :VARIABLEISSET:
+  Test if variable has been set.
+    In a Parameter substitution expression, it can test wheter a variable has been set
+    Structure: ${PARAM?ERR_MSG}, ${PARAM:?ERR_MSG}
+    If PARAM is set, use it, else print ERR_MSG and abort with exit 1
+    Both structure are almost the same, see code for demonstration
+    NOTE: Export the next code: C-u C-c C-v t
+    #+BEGIN_SRC bash eval:no :export code :tangle testIfVarIsSet.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="hello"
+      declare var2
+
+      echo "--------------------"
+      echo "Our variables are set:"
+      echo -e "\e[32mvar1: \e[0m$var1"
+      echo -e "\e[32mvar2\e[0m is declared but not set."
+      echo -e "\e[32mvar3\e[0m does not exists except for the test."
+      echo "--------------------"
+
+      echo 'This test uses the following format: ${PARAM?ERR_MSG}'
+      echo -e "This test code: \e[33m"'${var1?"var1 is not set"}'"\e[0m"
+      echo "The test will evaluate to true and the script will continue."
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var1?"var1 is  not set"}
+              echo "var1 is set: $var1"
+              ;;
+      esac
+
+      echo "--------------------"
+      echo 'This test uses the following format: ${PARAM?ERR_MSG}'
+      echo -e "This test code: \e[33m"'${var2?"var2 is not set"}'"\e[0m"
+      echo "The test will evaluate to FALSE and the script will exit code 1"
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var2?"var2 is  not set"}
+              echo "var2 is set: $var2"
+              ;;
+      esac
+
+      echo "--------------------"
+      echo "This test is the same as the previous one, except we do not provide ERR_MSG"
+      echo -e "This test code: \e[33m"'${var2?}'"\e[0m"
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var2?}
+              echo "var2 is set: $var2"
+              ;;
+      esac
+
+      echo "--------------------"
+      echo 'This test uses the following format: ${PARAM?}'
+      echo -e "This test code: \e[33m"'${var3?}'"\e[0m"
+      echo "The test will evaluate to FALSE and the script will exit code 1"
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var3?"var3 is  not set"}
+              echo "var3 is set: $var3"
+              ;;
+      esac
+
+      echo
+      echo
+
+      echo "--------------------"
+      echo 'Now we look at the other format: ${PARAM:?ERR_MSG}'
+      echo "The : makes a difference when PARAM has been declared an is null"
+      echo "First lets redo our first test with the ':' variation. "
+      echo -e "This test code: \e[33m"'${var1:?"var1 is not set"}'"\e[0m"
+      echo "The test will evaluate to true and the script will continue."
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var1:?"var1 is  not set"}
+              echo "var1 is set: $var1"
+              ;;
+      esac
+
+      echo "--------------------"
+      echo 'This test uses the following format: ${PARAM:?ERR_MSG}'
+      echo -e "This test code: \e[33m"'${var2:?"var2 is declared bu not set"}'"\e[0m"
+      echo "The test will evaluate to FALSE and the script will exit code 1"
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var2:?"var2 is declare but not set"}
+              echo "var2 is set: $var2"
+              ;;
+      esac
+
+      echo "--------------------"
+      echo "This test is the same as the previous one, except we do not provide ERR_MSG"
+      echo -e "This test code: \e[33m"'${var2:?}'"\e[0m"
+      echo -n "Do you want to run or skip? R/s: "
+      read u
+      case $u in
+          [sS])
+              echo "Skipping...."
+              ;;
+          [rR]|*) # I could just have given *)
+              : ${var2:?}
+              echo "var2 is set: $var2"
+              ;;
+      esac
+    #+END_SRC
+  :END:
+
+** A good use for Parameter substitution
+   Let's say you have a script that requires arguments, it should not be called without it.
+   With this one line, if the script is called without an argument, it exit with an error message.
+   #+BEGIN_SRC bash :results output :exports code :tangle parSubUsage.sh :tangle-mode (identity #o0755) :cmdline 2>&1
      #!/bin/bash
+
+     : ${1?"This scripts needs an argument."}
+
+     echo "Script is done."
+   #+END_SRC
+
+   #+RESULTS:
+
+
+* Command substitution
+  Command substitution takes the output of 1 or more commands and plugs it into another context.
+  #+BEGIN_SRC bash :results output :exports code :tangle commandSub.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+    #!/bin/bash
+
+    # Consider the following:
+    echo
+    echo "------------"
+    echo "ls -l"
+    echo 'ls -l'
+    echo ls -l
+    echo `ls -l`
+
+    # Command substitution can be place within backtick ``
+    # Find more details in my the following class https://skl.sh/2zQFWZA
+
+
+    ## Command output can be assigned to a variable
+    echo
+    echo "------------"
+    echo "Assign ip addr to myNetCardInfo"
+    myNetCardInfo=`ip addr`
+    printf "$myNetCardInfo" # Notice this prints newline properly.
+
+
+    echo
+    echo "------------"
+    echo "Using command substitution to control a for loop"
+    # You can used command substitution to control loops.
+    for i in `ls -A /var/log`; do
+        if [ -f /var/log/$i ]; then
+           echo $i
+        fi
+    done
+
+    echo
+    echo "------------"
+    echo "I like better to use process substituion, more on that in this class: https://skl.sh/2zQFWZA"
+
+    # I think process substitution makes for cleaner
+    while read -r file; do
+        if [ -f /var/log/$file ]; then
+            echo $file
+        fi
+    done < <(ls -A /var/log)
+  #+END_SRC
+
+  #+RESULTS:
+  #+begin_example
+
+  ------------
+  ls -l
+  ls -l
+  ls -l
+  total 196 -rwxr-xr-x 1 tech papa 528 Dec 17 14:17 defaultParam.sh -rwxr-xr-x 1 tech papa 532 Dec 18 16:13 envVar.sh -rw-r--r-- 1 tech papa 49571 Dec 18 16:22 #notes.org# -rw-r--r-- 1 tech papa 46596 Dec 18 16:20 notes.org -rw-r--r-- 1 tech papa 79213 Dec 17 08:39 notes.org~ -rwxr-xr-x 1 tech papa 217 Dec 17 16:53 remLed0.sh -rwxr-xr-x 1 tech papa 3489 Dec 18 10:23 testIfVarIsSet.sh
+
+  ------------
+  Assign ip addr to myNetCardInfo
+  1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+      link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+      inet 127.0.0.1/8 scope host lo
+         valid_lft forever preferred_lft forever
+      inet6 ::1/128 scope host 
+         valid_lft forever preferred_lft forever
+  2: enp0s25: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default qlen 1000
+      link/ether 3c:97:0e:17:7d:a7 brd ff:ff:ff:ff:ff:ff
+  3: wlp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc mq state UP group default qlen 1000
+      link/ether 8c:70:5a:f2:79:84 brd ff:ff:ff:ff:ff:ff
+      inet 192.168.0.10/24 brd 192.168.0.255 scope global dynamic noprefixroute wlp3s0
+         valid_lft 594392sec preferred_lft 594392sec
+      inet6 fd00:f81d:f7b:de22:21f4:ff5:82f9:ff7f/64 scope global temporary dynamic 
+         valid_lft 523852sec preferred_lft 5175sec
+      inet6 fd00:f81d:f7b:de22:6564:c5ea:35d1:efa/64 scope global temporary deprecated dynamic 
+         valid_lft 437732sec preferred_lft 0sec
+      inet6 fd00:f81d:f7b:de22:89d3:c25:6259:b466/64 scope global temporary deprecated dynamic 
+         valid_lft 351611sec preferred_lft 0sec
+      inet6 fd00:f81d:f7b:de22:b72:c972:69a6:65c2/64 scope global dynamic mngtmpaddr noprefixroute 
+         valid_lft 535428sec preferred_lft 401571sec
+      inet6 fe80::b1d:6c8d:bed3:9ea6/64 scope link noprefixroute 
+         valid_lft forever preferred_lft forever
+  6: wwp0s20u4i6: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
+      link/ether 02:80:37:ec:02:00 brd ff:ff:ff:ff:ff:ff
+  ------------
+  Using command substitution to control a for loop
+  alternatives.log
+  alternatives.log.1
+  apport.log
+  apport.log.1
+  apport.log.2.gz
+  apport.log.3.gz
+  auth.log
+  auth.log.1
+  auth.log.2.gz
+  auth.log.3.gz
+  auth.log.4.gz
+  boot.log
+  bootstrap.log
+  btmp
+  btmp.1
+  dpkg.log
+  dpkg.log.1
+  faillog
+  fontconfig.log
+  gpu-manager.log
+  kern.log
+  kern.log.1
+  kern.log.2.gz
+  kern.log.3.gz
+  kern.log.4.gz
+  lastlog
+  syslog
+  syslog.1
+  syslog.2.gz
+  syslog.3.gz
+  syslog.4.gz
+  syslog.5.gz
+  syslog.6.gz
+  syslog.7.gz
+  tallylog
+  wtmp
+  wtmp.1
+  Xorg.0.log
+  Xorg.0.log.old
+  Xorg.1.log
+  Xorg.1.log.old
+  Xorg.2.log
+  Xorg.2.log.old
+
+  ------------
+  I like better to use process substituion, more on that in this class: https://skl.sh/2zQFWZA
+  alternatives.log
+  alternatives.log.1
+  apport.log
+  apport.log.1
+  apport.log.2.gz
+  apport.log.3.gz
+  auth.log
+  auth.log.1
+  auth.log.2.gz
+  auth.log.3.gz
+  auth.log.4.gz
+  boot.log
+  bootstrap.log
+  btmp
+  btmp.1
+  dpkg.log
+  dpkg.log.1
+  faillog
+  fontconfig.log
+  gpu-manager.log
+  kern.log
+  kern.log.1
+  kern.log.2.gz
+  kern.log.3.gz
+  kern.log.4.gz
+  lastlog
+  syslog
+  syslog.1
+  syslog.2.gz
+  syslog.3.gz
+  syslog.4.gz
+  syslog.5.gz
+  syslog.6.gz
+  syslog.7.gz
+  tallylog
+  wtmp
+  wtmp.1
+  Xorg.0.log
+  Xorg.0.log.old
+  Xorg.1.log
+  Xorg.1.log.old
+  Xorg.2.log
+  Xorg.2.log.old
+  #+end_example
+
+* Variable
+** Variable length
+   ${#var} returns the number of character in $var
+   If var is an array, it return the length of the first element.
+   ${#var[@]} OR ${#var[*]}to return number of items in var array
+   ${#@} OR ${#*} returns the number of positional parameters.
+   Change the result of the last echo command by changing :cmdline args, make sure to leave 2>&1.
+   #+BEGIN_SRC bash :results output :exports code :tangle varLength.sh :tangle-mode (identity #o0755) :cmdline p1 p2 2>&1
+     #!/bin/bash
+
+     var1="hello"
+     echo "var1 length: ${#var1}"
+
+     declare -a var2
+     var2=("bye" "hello")
+     echo '${#var2'}" length: ${#var2}"
+     ## This is the same
+     echo '${#var2[0]}'" length: ${#var2[0]}"
+
+     echo "var2 has ${#var2[@]} items."
+
+     ## Checking positional parameters
+     echo "You have provided ${#@} parameters."
+   #+END_SRC
+
+   #+RESULTS:
+
+** Substring removal
+   ${var#PATTERN} Remove from $var the SHORTEST part of PATTERN that matches the front end of $var
+   #{var##PATTERN} Remove from $var the LONGEST part of PATTERN that matches the front end of $var
+   Here is a simple function that remove leading zero from arg given through :cmdline
+   #+BEGIN_SRC bash :results output :exports code :tangle remLed0.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+
+     var1=abcd0123ef12d34c3213
+     pattern1=a*d # This will match everything from a to d
+     pattern2=b*d # This will match everything from b to d, but b needs to be the first character.
+     pattern3=*b*d # This will match everything from b to d and will include anything infront of b
+     pattern4=abcd*34
+     pattern5=a*d*34 #same as above.
+
+     echo "Number of char in var1: ${#var1}"
+
+     echo "${var1#$pattern1}" # This will remove abcd, leaving: 0123ef12d34c3213
+     echo "${var1##$pattern1}" # This will remove abcd, leaving: 34c3213
+
+
+     # Those will not remove anything.
+     # This is because we search from the beginning, there is no matching part at the start of the variable.
+     # In a sense, if you are familiar with regex, it has a similar behavior to ^b*d
+     echo "${var1#$pattern2}"
+     echo "${var1##$pattern2}"
+
+     # This pattern on the other hand will work
+     # This produce the same results as our first attempt whit pattern1
+     echo "${var1#$pattern3}"
+     echo "${var1##$pattern3}"
+
+     # Both of those will leave c3213
+     echo "${var1#$pattern4}"
+     echo "${var1##$pattern4}"
+
+     # Same as above
+     echo "${var1#$pattern5}"
+     echo "${var1##$pattern5}"
+   #+END_SRC
+
+   #+RESULTS:
+
+   ${var%PATTERN} Remove from $var the SHORTEST part of PATTERN that matches the back end of $var
+   #{var%%PATTERN} Remove from $var the LONGEST part of PATTERN that matches the back end of $var
+   #+BEGIN_SRC bash :results output :exports code :tangle remLed0.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+
+     var1=abcd0123ef12d34c3213
+     pattern1=3*13
+     pattern2=34
+     pattern3=34*
+     pattern4=*3213
+     pattern5=23*d*c*
+
+     echo "Number of char in var1: ${#var1}"
+
+     echo
+     echo "--------------------"
+     echo "Pattern1: $pattern1"
+     echo "${var1%$pattern1}"
+     echo "${var1%%$pattern1}"
+
+     echo
+     echo "--------------------"
+     echo "Pattern2: $pattern2"
+     echo "${var1%$pattern2}"
+     echo "${var1%%$pattern2}"
+
+
+     echo
+     echo "--------------------"
+     echo "Pattern3: $pattern3"
+     echo "${var1%$pattern3}"
+     echo "${var1%%$pattern3}"
+
+
+     echo
+     echo "--------------------"
+     echo "Pattern4: $pattern4"
+     echo "${var1%$pattern4}"
+     echo "${var1%%$pattern4}"
+
+
+     echo
+     echo "--------------------"
+     echo "Pattern5: $pattern5"
+     echo "${var1%$pattern5}"
+     echo "${var1%%$pattern5}"
+   #+END_SRC
+
+   #+RESULTS:
+
+** Variable expansion
+
+    The following format will expand var starting a pos
+    ${var:pos}
+    #+BEGIN_SRC bash :results output :exports code :tangle expandVarFromPos.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+
+      var1="0123456789"
+
+      echo
+      echo "---------"
+      echo 'Running $var1:0'
+      echo "${var1:0}"
+
+      echo
+      echo "---------"
+      echo 'Running $var1:3'
+      echo "${var1:3}"
+    #+END_SRC
+
+    #+RESULTS:
+    : 
+    : ---------
+    : Running $var1:0
+    : 0123456789
+    : 
+    : ---------
+    : Running $var1:0
+    : 3456789
+
+    Expand max len char of var starting at pos
+    ${var:pos:len}
+    #+BEGIN_SRC bash :results output :exports code :tangle expandVarMax.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="0123456789"
+
+      echo '$var1: '"$var1"
+      echo
+      echo "----------"
+      echo 'Running ${var1:0:4}'
+      echo "${var1:0:4}"
+
+      echo
+      echo "----------"
+      echo 'Running ${var1:1:4}'
+      echo "${var1:1:4}"
+
+      echo
+      echo "----------"
+      echo 'Running ${var1:3:20}, notice no error or warning.'
+      echo "${var1:3:20}"
+    #+END_SRC
+
+    #+RESULTS:
+
+    This last format can be quite useful.
+    Matches names of all previously declared variables beginning with varprefix.
+    ${!varprefix*}, ${!varprefix@}
+    #+BEGIN_SRC bash :results output :exports code :tangle varPrefix.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="hello"
+      var2="World"
+      declare var3
+
+      a=${!va*} # var3 is NOT part of this.
+      echo "$a" # Display var1 var2
+      for var in ${a[@]}; do # Loop through each space separated
+          echo '$'"$var: ${!var}" # Derefencing the variables in $a[@]
+      done
+
+
+    #+END_SRC
+
+    #+RESULTS:
+
+** Substring replacement
+    The following format will replace the FIRST match of PATTERN with REPLACEMENT with VAR
+    If you do not provide a REPLACEMENT, PATTERN will be delete from VAR
+    ${VAR/PATTERN/REPLACEMENT}
+
+    #+BEGIN_SRC bash :results output :exports code :tangle subRep.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="0123456789"
+
+      echo '$var1: '"$var1"
+
+      var2="${var1/345/-Hello-}"
+      echo '$var2: '"$var2"
+
+      var3="${var2/Hello/}"
+      echo '$var3: '"$var3"
+
+    #+END_SRC
+
+    #+RESULTS:
+
+    This next format, is the same, except it will replace ALL match found.
+    #+BEGIN_SRC bash :results output :exports code :tangle subRep.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="0123456789 N0w I c0unt Backward 9876543210"
+
+      echo '$var1: '"$var1"
+
+      var2="${var1//345/-Hello-}"
+      echo '$var2: '"$var2"
+
+      var3="${var2//0/Zero}"
+      echo '$var3: '"$var3"
+
+    #+END_SRC
+
+    #+RESULTS:
+
+    Next format will replace Pattern with Replacement in var if Pattern is at the start of var
+    ${var/#Pattern/Replacement}
+
+    Next format will replace Pattern with Replacement in var if Pattern is at the end of var
+    ${var/%Pattern/Replacement}
+
+    #+BEGIN_SRC bash :results output :exports code :tangle prefRep.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+      #!/bin/bash
+
+      var1="0123456789_abcdef-ABCDEF-01234"
+      echo '$var1: '"$var1"
+
+      echo
+      echo "---------"
+      echo 'Running: ${var1/#01234/ABCD}'
+      newvar=${var1/#01234/ABCD} # Matches 01234 if at the begining of the string
+      echo $newvar
+
+      echo
+      echo "---------"
+      echo 'Running: ${var1/%01234/ABCD}'
+      newvar2=${var1/%01234/ABCD} # Matches 01234 if at the end of the string
+      echo $newvar2
+
+    #+END_SRC
+
+    #+RESULTS:
+
+
+** Environment variable
+   Let's play with what we learned and create a script that will display system information to stdout
+   #+BEGIN_SRC bash :results output :exports code :tangle envVar.sh :tangle-mode (identity #o0755) :cmdline 2>&1
+     #!/bin/bash
+
+     # This loop is control by input redirection & process substitution.
+     # I provide read with -r to ensure no characters gets escaped.
+     while  read -r line; do
+         var="${line%=*}"
+         val="${line#*=}"
+
+         # Here we create a variable from expanding m_$var and assign $val to it.
+         # Each environment variable will be assign a m_variable=value in this script.
+         # DO NOT ASSIGN ${var}=${val} we are playing with environment variable.
+         eval "m_${var}=${val}" >/dev/null 2>&1 # I don't want output to the screen.
+
+         if [[ $? > 0 ]]; then # Eval return > 0 we have an error
+             # In evaluation mode, PATH does not work good, silence it.
+             # I don't plan on using this variable, plus in terminal mode it works.
+             # I should figure out why, but I got more important thing to teach you.
+             if [[ "${var}" == "PATH" ]]; then
+                 echo 1 > /dev/null
+             else
+                 2>&1 echo "Error creating m_$var"
+             fi
+         fi
+
+
+     done < <(printenv)
+     #      ^---------^ Process substitution
+     #    ^ Redirecting input
+
+     ## Now let's look for some specific local variable.
+     ## Before we print them, we first need to make sure they exists.
+     ## Yes there are better ways to do this, but lets play with what we learned.
+     if [[ ${!m_DISPLAY*} ]]; then
+         echo "Your xserver display variable: $m_DISPLAY"
+     else
+         echo "You don't seem to be running an X server."
+     fi
+
+     if [[ ${!m_LANG*} ]]; then
+         echo "LANG set to $m_LANG"
+     fi
+
+     if [[ ${!m_DESKTOP_SESSION*} ]]; then
+        case $m_DEKSTOP_SESSION in
+            "XFCE")
+                echo "You are running XFCE"
+                ;;
+            ,*)
+                echo "You are running $m_DESKTOP_SESSION"
+                ;;
+        esac
+     fi
+     echo "User: "${m_USER-"UNKNOWN???"}
+
+     ## When you run inside emacs, there is an env variable set.
+     ## But when using org evaluation, this variable is not returned from printenv.
+     ## Should you export the code, it will report properly.
+     if [[ ${!m_INSIDE_EMACS*} ]]; then
+         echo "Var Inside emacs is set, you must be running emacs."
+     fi
+
+     if [[ ${!m_TERM*} ]]; then
+         if [[ "$m_TERM" = "dumb" ]]; then
+            echo "You are running a dumb teminal"
+         fi
+     fi
+
+     ## Unset all variables
+     a=${!m_*}
+     echo
+     echo "---------"
+     echo "Unset all variable in this script..."
+     for i in ${a[@]}; do
+         echo "Unset $i"
+         unset $i
+     done
 
    #+END_SRC
 
-
+   #+RESULTS:
 
 * Projects
 

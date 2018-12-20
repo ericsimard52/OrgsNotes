@@ -1,0 +1,345 @@
+!!README!!
+  While this is an org file I did not take full advantage of it.
+  Codes are included in this file. This way, this is the only file you need.
+  Codes are locates in block beggining with #+BEGIN_SRC & #+END_SRC
+
+
+
+* Intro.
+  Most Linux distribution provide a good set of programs that can be installed directly from the local computer.
+  Linux has been using "App Store" style of installation for decades we call them repositories (REPO). What I mean by this is that you rarely should have to download from a website when you need a program.
+  You issue a command line and the system will fetch what you want from a repo. Which is already precompiled and configured for your distribution.
+  Package managers save you from Linux's hellish package dependencies. It will handle and manage dependency required by the package you want to install.
+
+  In this class, we will learn about apt, the Adcanced Packaging Tool. This is the package management for all Debian & Ubuntu based distro.
+  While there are GUI version probably installed, I will teach you the original command line.
+
+  There are multiple command line programs that will be covered here:
+  - apt # We use apt-get instead, but in cases where you work on a distro without apt-get, look for apt, same task can be performed.
+  - apt-get
+  - apt-cache
+
+  The apt package are very important, they can be seen as a frontend to dpkg. Dpkg performs action on individual pacakges while the apt will consider dependencies and will call dpkg on each package as needed.
+  You sometime needs to call dpkg yourself, most of the time it is because apt encountered an error and crash, then dpkg can be called directory to complete the installation sequence.
+
+* apt-cache
+** Commands
+*** Update your local list of packages
+  All apt command needs to be run as root, so the use of sudo is recommended over su.
+  One of the first thing to do when you work with apt is to update your local list of packages. Repos can and do change addresses, so you first want to make sure you local cache is up to date with the following:
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-get update
+  #+END_SRC
+
+*** Searching for packages
+  As always, start with sudo apt-get update, unless you have just ran it.
+  You can search packages without being connected to the internet.
+  The command apt-cache allows you to query you cached information.
+
+  Apt-cache performs no modification, it allows you to search and generate output from metadata.
+  To search for packages:
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache search PACKAGENAME
+  #+END_SRC
+
+*** Display information about a package.
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache showpkg PACKAGENAME
+  #+END_SRC
+  Notes about dependencies. showpkg will display reverse and forward dependencies.
+  Forward dependencies are the one that PKG depends on. They need to be install for PKG to work.
+  Reverse dependencies are OTHER_PKG that depends on PKG. 
+
+  There is also another command that show different information
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache show PACKAGENAME
+  #+END_SRC
+
+*** Display statistics about the cache
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache stats
+  #+END_SRC
+  This command does not take an argument like PACKAGENAME.
+  You will find information like total package names, total distinctive verion, missing packages and many different type of packages count.
+  Notes on packages type.
+  There are many different type of packages:
+  - Normal packages
+  - Pure virtual
+    Those are not real packages, they only provide a name. For example, mail-transport-agent is not a package, but will be listed.
+    That "PKG" is provided by several other packages. If you request to install such packages, apt will list you which package provides it and you can then decide which to install.
+  - Single virtual
+    Same as Pure virtual packages, but only 1 real package provides it.
+  - Mixed virtual
+    Those are packages that either provides the package of have the virtual package name as the package name
+    Example, on Debian system, debconf is both an real package and provided by debconf-tiny
+  - Missing
+    A package that is referenced by another as a dependencies and is not provided by any packages.
+    This is broken dependencies
+  - Total distinctive version
+  - Total dependencies
+*** Display source information of a package
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache showsrc PACKAGE
+  #+END_SRC
+  This will display source package that match given name.
+  All versions and records that declare the name are listed.
+  You need to have the source entries.
+  To display only source packages name use:
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache showsrc --only-source PACKAGE
+  #+END_SRC
+*** Display summary of unmet dependencies
+  #+BEGIN_SRC bash :eval no :exports nones
+    sudo apt-cache unmet
+  #+END_SRC
+*** Search for pacakges
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache search regex
+  #+END_SRC
+  This seach command can take wildcard * and POSIX regex pattern
+  It search through name and description
+  It prints out package name and short description for match found.
+  If you provide --full option
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache search --full regex
+  #+END_SRC
+  It will be like calling show PKG for all matches.
+  To search only through names and not description
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache search --name-only regex
+  #+END_SRC
+*** List dependencies
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache depends PACKAGE
+  #+END_SRC
+  Shows a full list of dependencies plus a list of packages that can fulfill the requirement.
+
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-cache rdepends PACKAGE
+  #+END_SRC
+  Shows a list of reverse dependencies this package has.
+  There are a few more commands possible, look at man apt-cache
+*** Show installed version and all available version
+    #+BEGIN_SRC bash :exports none :eval no
+      sudo apt-cache policy PACKAGE
+    #+END_SRC
+    This will show installed version and all available version.
+
+** Options
+   For a full list, refer to man pages.
+   -q print only log related items, no progress.
+   -i Good to use with unmet and depends command, it will print only important dependencies
+
+
+
+
+
+
+* Set apt sources
+  File is located in /etc/apt/sources.list
+  It is also constructed from the files in /etc/apt/sources.list.d
+  Here is an example files from my my current system
+  You can see the src package commented out.
+
+  Format is as such:
+  | {deb,deb-src} | URL | Release | Repo components |
+  The components are as follow:
+  Main : Officially supported
+  Restricted : Supported software that are not completly free license
+  Universe : Community supported software
+  Multiverse : Software that are not free.
+  Note that for the release you need to get source from your release, although sometimes I have found myself having to attempt getting some packages from older version.
+  Also only the lowercase adjective part of the distro is needed.
+  #+BEGIN_EXAMPLE
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic main restricted
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic main restricted
+
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic-updates main restricted
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic-updates main restricted
+
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic universe
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic universe
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic-updates universe
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic-updates universe
+
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic multiverse
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic multiverse
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic-updates multiverse
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic-updates multiverse
+
+    deb http://ca.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
+    # deb-src http://ca.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse
+
+    # deb http://archive.canonical.com/ubuntu bionic partner
+    # deb-src http://archive.canonical.com/ubuntu bionic partner
+
+    deb http://security.ubuntu.com/ubuntu bionic-security main restricted
+    # deb-src http://security.ubuntu.com/ubuntu bionic-security main restricted
+    deb http://security.ubuntu.com/ubuntu bionic-security universe
+    # deb-src http://security.ubuntu.com/ubuntu bionic-security universe
+    deb http://security.ubuntu.com/ubuntu bionic-security multiverse
+    # deb-src http://security.ubuntu.com/ubuntu bionic-security multiverse
+
+  #+END_EXAMPLE
+* apt-get
+  This is where most of your time will be spent. Apt-get is the package handling utility.
+  apt-get mush be run as root, sudo is recommended.
+  Format is apt-get {options} command
+** Commands
+*** Update your local list of packages
+  All apt command needs to be run as root, so the use of sudo is mandatory.
+  One of the first thing to do when you work with apt is to update your local list of packages. Repos can and do change addresses, so you first want to make sure you local cache is up to date with the following:
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-get update
+  #+END_SRC
+
+*** Updating all installed packages
+  One command that should be run on a regular basis apt-get upgrade.
+  Make sure you update your local cache first.
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-get upgrade
+  #+END_SRC
+
+  This will update every package installed to it's latest compatible available version.
+  In recent years, I have seen GUI updates that request a reboot. This will not happen when you use the command line.
+  While of course if the kernel gets upgraded, you will need to reboot to use it, but apt will no bother you with that.
+
+  To update selected packages, see Installing new packages.
+
+*** Upgrading to a newer distribution
+  The upgrade command will NOT upgrade to a newer version of your distro. It will update packages, but you will remain on the same version.
+  Let's assume you run ubuntu Xenial, after a apt-get upgrade you will still be on Ubuntu Xenial, no matter how outdated it is.
+  To upgrade your distro, you run:
+  #+BEGIN_SRC bash :eval no :exports none
+    sudo apt-get dist-upgrade
+  #+END_SRC
+
+  Make sure you run apt-get update first. The upgrade process can be fairly long, but you can let it do it's work and go on doing yours.
+  There are time when it will ask questions in the terminal, if you are unsure, follow default answers.
+
+*** Installing new packages
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get install PKG1 PKG2 PKG3
+   #+END_SRC
+   One or more packages can be supplied on the same line.
+   You do not use the fully qualified name, just the package name. For example, to install apt-utils:
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get install apt-utils
+   #+END_SRC
+   And not
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get install apt-utils_1.6.6_amd64.deb
+   #+END_SRC
+
+   To select specific version of a package to install:
+   #+BEGIN_SRC bash :exports none :eval no
+
+     sudo apt-get install apt-utils=1.6.6
+   #+END_SRC
+
+   To update only selected package, the install command is used.
+
+   If a hypen is appended to the package name, the package will be removed if it is installed.
+
+*** Removing packages
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get remove PKG1 PKG2 PKG3
+   #+END_SRC
+   Note that removing packages this way, leaves behind configuration files.
+   If a + sign is appended to the package name without space, the package will be installed
+*** Purgin packages
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get purge PKG1 PKG2
+   #+END_SRC
+   Purge removes the packages and all configuration files too.
+*** Getting source of package.
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get source PKG
+   #+END_SRC
+   This will cause apt to fetch source packages and download them into the current directory.
+   You need the deb-src in your sources.list for this to work.
+   If the --compile option is given, the package will be compiled into a .deb binary.
+*** Check for broken dependencies.
+   #+BEGIN_SRC bash :eval no :exports none
+     sudo apt-get check
+   #+END_SRC
+   This is a diagnostic tools, it update the package cache and check for broken dependencies.
+*** Download package
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get download PKG
+   #+END_SRC
+   This command will download the binary package into the current directory
+*** Removing package that are no longuer needed.
+   #+BEGIN_SRC bash :export none :eval no
+     sudo apt-get autoremove
+   #+END_SRC
+   Package that have been installed to satisfy dependencies and that are no longuer needed will be removed.
+   apt-get will often tell you when such package are found.
+
+*** Cleaning up
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get clean
+   #+END_SRC
+   The above command will clear out the local repo of retrieved pacakge files.
+   It removes everything but the lock file and partial archives.
+
+   The following command is prefered to the above.
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo apt-get autoclean
+   #+END_SRC
+   there is auto-clean alias since 1.1
+   The autoclean command cleans out the local repo of retrieved package files, but not as agressive as clean.
+   It only removes packages that can no longer be downloaded and are largely useless.
+   This let you maintain a cache for a long time without it growing out of control.
+** Options
+   --no-install-recommends
+     Do not install recommended package as dependencies.
+   --install-suggest
+     Force installation of suggested packages as dependencies to install
+   -d --download-only
+     Packages are only downloaded, not even unpacked.
+   -f --fix-broken
+     Apt does not allow broken dependencies to exist on a system. When they are broken, apt will refuse to perform any task other then fixing the problem.
+     With the above options, apt will attempt to find a resolution.
+     It is recommended to run only with option to allow APT to choose its own solution.
+     While it is very good, broken dependencies can sometime be hard to correct. Manual dpkg operation can be necessary in such case.
+   -q --quiet
+     Produces only messages good for logging.
+   -s --simulate --just-print --dry-run --recon --no-act
+     Do nothing, just pretend. This can be run as a normal user.
+   -y --yes --assume-yes
+     Automatically answer yes to all questions.
+   -assume-no
+     Automatically answer no to all questions.
+   --no-upgrade
+     When used with install command, prevent already installed packages from being upgraded. 
+   --only-upgrade
+     Do not install new packages, if given package is not install, do nothing, otherwise upgrade the package.
+   --purge
+     When a pacakge is remove, it will be purge even if remove command is used.
+* dpkg
+  Lots of program not available for download through repos, can have a .deb file available for download.
+  To install .deb file, dpkg is the tools.
+  dpkg can be very usefull to fix broken dependencies.
+  It can do more then that, but the use of apt is prefered.
+  Structure: dpkg {options} action
+
+** Actions
+   -i --install pkg
+   #+BEGIN_SRC bash :exports none :eval no
+     sudo dpkg -i ./pkgFile.deb
+   #+END_SRC
+   The above command will install pkgFile.deb.
+
+   --unpack pkg
+     Will unpack the package files but nothing more.
+   --configure package OR --configure -a OR --configure --pending
+     Configure a package that has been unpacked.
+     If -a or --pending is given, no package name is needed. This will instruct dpkg to configure all unpack & unconfigured packages
+   -r --remove package
+     Remove given packages, same as apt-get configuration file are left intact.
+     This action can also take -a --pending options.
+   -P --purge
+     Same as with apt-get all files are removed. This action also takes -a --pending.
+   -V --verify PACKAGE
+     Verify the integrity of a package or all package if PACKAGE is ommited
