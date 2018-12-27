@@ -1,0 +1,65 @@
+
+* Intro
+  https://orgmode.org
+  Org mode bring life to plain text. Very powerfull and effective system.
+  
+** Features
+   - Editing
+     Org is built on top of outline.el. This is what allows for Heading, folding and unfolding.
+   - Planning
+     Org can help you plan with good handling of Todo's item, handling of deadline, schedule date and time.
+   - Clocking
+     Record time spent on task and get reports when needed.
+   - Agenda
+     With the Agenda view, quickly view and focus on what needs to be done.
+     The agenda view display the schedule for the task of the week, todo's, project and more.
+     The agenda is very customizable
+   - Capturing
+     Adding TODO items to your .org files is called capturing.
+     You can capture from everywhere both within Emacs and from other programs.
+     Capturing templates allow you to decide what information you want to capture from a given context.
+   - Tables
+     Org can manage and create tables.
+     You can import tables from .cdv .tsv.
+     You can also export them in multiple format
+   - Exporting
+     Org is an authoring and publication tool.
+     You can use markup and then have it converted to HTML, Lates, ODT and more.
+     You can create new backend for your favorite format. (Programming require)
+     You can alse define publishing projects with one or more .org files.
+     And with more then 1 publication backends
+   - Working with source code.
+     Org is very well suited for literate programming.
+     https://en.wikipedia.org/wiki/Literate_programming
+     When working with source code, you can create code block within your text file.
+     These blocks can be evaluated infile. One or multiple source block can be exported to file.
+     With literate programming, your source code is embeded in your documentation.
+   - Want access to your org files on the go? There is an APP for that, seriously, MobileOrg
+
+* Document Structure.
+** Headlines
+   You have already seen and used headlines. Headlines start with one or more * on the left margin.
+   Subheaders contains more stars then the parent header.
+   All subheaders fold with the parent header
+   And empty line after the end of a subtree will be part of it. Additional empty line will be left out.
+
+   To create a heading, press C-<RETURN> this will insert a new heading below the last one.
+   This new heading will have the same level. Without moving the cursor press tab to move new heading to a new level.
+   Press TAB multiple time to cycle this new heading's level.
+** Visibility cycling
+*** Global & local
+    Visibility cycling is bound to <TAB> and S-<TAB> (S refers to the SHIFT key.)
+    <TAB> cycles visibility of "object" under the cursor. Be it a header, source ccode, drawers and many others.
+
+    S-<TAB> & C-u <TAB> controls the global cycling. Global cycling rotate the entire buffer.
+    Note that inside tables, S-<TAB> jumps to the previous field.
+    You can run global cycling using <TAB> only when at the very beginning og the buffer AND not on a headline AND org-cycle-global-at-bob is set to non-nil value.
+
+    C-u C-u <TAB> Switches visibility back to initial state.
+    C-u C-u C-u <TAB> Shows all.
+
+*** Initial visibility
+*** Catching invisible edits
+
+* Tables
+  Org can manage tables, Spreadsheet like calcualtion are supported using the Emacs Calc package.

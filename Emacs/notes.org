@@ -1,3 +1,73 @@
+This file was created in Emacs with org-mode installed.
+Refer to the video 14 in the following class if needed: https://www.skillshare.com/classes/The-Free-Linux-Bin/1454905790 
+
+:HOW_TO_INSTALL_ORG_MODE:
+Pressing TAB on the above line should fold the content, if not ORG is not installed.
+
+  Make sure the following code is present and at the top of your ~/.emacs file
+  #+BEGIN_CODE
+(package-initialize)
+;; load emacs 24's package system. Add MELPA repository.
+(when (>= emacs-major-version 24)
+  (require 'package)
+  (add-to-list
+   'package-archives
+   ;; 1 of the 2 next line needs to be there.
+   ;;'("melpa" . "http://stable.melpa.org/packages/")
+   '("melpa" . "http://melpa.milkbox.net/packages/")
+   )
+  (add-to-list 'package-archives    '("org" . "https://orgmode.org/elpa") t)
+  )
+
+  #+END_CODE
+
+  Restart emacs
+
+  Press M-x package-list-packages
+  scroll down to org
+  While on that line, press i then press x
+  Confirm that you want to install
+
+  Restart Emacs to be sure and the file will look way better.
+:END:
+
+* To record [2/3]
+** DONE Change uppercase/lowercase
+** DONE Bind key to commands
+** TODO Carry .emacs with you and .emacs.d
+
 * Intro
+* Opening, Saving and Closing Files.
 * Managing Buffers
 * Dired mode
+* Capitalization & uppercase/lowercase
+** Capitalizing a Word
+   M-c
+   M-x <RET> capitalize-word
+** Cap Region
+   Select your region
+   M-x <RET> capitalize-region
+
+** Uppercase word
+   M-u
+** Uppercase Region
+   C-x c-u
+   By default the above command is disabled, Emacs will give you the options to enable it when you attempt to use it.
+** Lowercase word
+   M-l
+** Lowercase Region
+   C-x C-l
+   By default the above command is disabled, Emacs will give you the options to enable it when you attempt to use it.
+
+** Fix Capitalize words
+   #+BEGIN_SRC elisp :export none :eval no
+     ;; This new function will move the cursor to the beginning of the word and capitalize that letter. Cursor will move to end of word after.
+     (defun  my_capitalize-word()
+       "Cap"
+       (interactive)
+       (left-word)
+       (capitalize-word 1)
+       )
+     (global-set-key (kbd "M-c") 'my_capitalize-word)
+
+   #+END_SRC
