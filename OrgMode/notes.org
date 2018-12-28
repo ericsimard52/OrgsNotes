@@ -59,8 +59,35 @@
     C-u C-u C-u <TAB> Shows all.
 
 *** Initial visibility
-*** Catching invisible edits
+    When org mode starts, the global state is set to OVERVIEW. Only top level headers are visible.
+    This can be set through the variable org-startup-folded or on a per-file with the following lines anywhere in the buffer.
+    #+STARTUP: content
+    #+STARTUP: showall
+    #+STARTUP: showeverything
+    #+STARTUP: overview
+    :NOTE:
+    I have place overview last so that this will be the initial state of this file.
+    :END:
+    Also, any entries with a visibility property will get their visibility set accordingly.
+    Allowed value for this property:
+    - folded
+    - children
+    - content
+    - all
 
+    To switch back to startup visibility of the current buffer:
+    C-u C-u <TAB>
+*** Catching invisible edits
+    Sometimes you will endup editing an invisible part of your file.
+    It can become confusing on what was changed and how to fix it.
+    Setting org-catch-invisible-edits to non-nil will help with this.
+    Let's look at the docstring for more info:
+    To do this, enter the following command:
+    M-x describe-variable <RET> org-catch-invisible-edits <RET>
+    A new buffer will open with the desired docstring. Look through it.
+    If wanted, change the variable:
+    M-x set-variable <RET> org-catch-invisible-edits <RET> {nil,error,show,show-and-error,smart}
+    Press C-x 1 when done with the docstring. This will remove the split.
 * Tables
 ** Creating tables manually
   Org can manage tables, Spreadsheet like calcualtion are supported using the Emacs Calc package.
