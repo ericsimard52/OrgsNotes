@@ -62,4 +62,282 @@
 *** Catching invisible edits
 
 * Tables
+** Creating tables manually
   Org can manage tables, Spreadsheet like calcualtion are supported using the Emacs Calc package.
+  Any line with | as the first non-whitespace character is considered part of a table. | is also the column separator.
+  Simple table looks likes:
+  | NAME  | Phone | Age |
+  |-------+-------+-----|
+  | Peter |  1234 | 47  |
+  |       |       |     |
+
+  Let's do one together:
+  #+NAME: TableExample
+  #+BEGIN_EXAMPLE 
+  
+  #+END_EXAMPLE
+
+  Table is realigned everytime you press <TAB> or C-c C-c while inside the table.
+  <TAB> Will move you to the next field. <RET> To the next row. S-<TAB> To the previous field.
+  Org threat Backspace and maybe DEL in a special way so that the table does not get distorted by deleting data.
+  Also if you type right after entering a field with <TAB>, S-<TAB> or <RET> The field will be overwriten (Set blank when you start typing)
+  If this behavior is not to your liking, change it by configuring org-table-auto-blank-field
+** Converting active region to table
+   To convert an active region, press C-c |
+   If every line has at least one <TAB> character, it will be assumed to be tab delimited.
+   If every line contains a comma, CSV is assumed.
+   If not, lines are split at whitespace.
+   You can use a prefix to force a separator:
+   C-u forces CSV, C-u C-u forces TAB
+   C-u C-u C-u will prompt for a regular expression to match the separator.
+   If no active region is selected, a new table will be created.
+
+   #+BEGIN_EXAMPLE
+     Select the following 3 lines and press C-c |
+
+     Name,email,Phone
+     Eric,notmyemail@gmail.com,123456
+     Nicole,notheremail@gmail.com,589543
+
+
+     Same content, using tab
+
+     Name  email Phone
+     Eric  notmyemail@gmail.com  123456
+     Nicole  notheremail@gmail.com  589543
+
+
+     Same content, using space
+
+     Name email Phone
+     Eric notmyemail@gmail.com 123456
+     Nicole notheremail@gmail.com 589543
+
+
+
+     In the next example, press C-u C-u C-u C-c | and provide ; has a separator
+     Name;email;Phone
+     Eric;notmyemail@gmail.com;123456
+     Nicole;notheremail@gmail.com;589543
+
+
+   #+END_EXAMPLE
+** Moving through a table and aligning
+   Org provide multiple keybinding to facilitates these tasks:
+   - C-c C-c (org-table-align)
+     Re-align the table and don't move the cursor.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - C-c <SPC> (or-table-blank-field)
+     Blank field at point (cursor)
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | data 3 |
+     :END:
+   - <TAB> (org-table-next-field)
+     Re-align the table, move to next field, create new row if needed.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | !Come here and press <TAB>! |
+     :END:
+   - S-<TAB> (org-table-previous-field)
+     Re-align table, move to previous field
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | !Come here and press S-<TAB>! |
+     :END:
+   - <RET> (org-table-next-row)
+     Re-align the table and move down to next row, create a new one if needed.
+     At the beggining or end of the line, <RET> still does NEWLINE, so you can use it to split a table.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | data 3 |
+     :END:
+   - M-a (org-table-beginning-of-field)
+     Move to the beginning of the current field or on to the previous one.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | data 3 |
+     :END:   
+   - M-e (org-table-end-of-field)
+     Move to the end of the current field or to the next field.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     | data 1 | data 2 | data 3 |
+     :END:
+** Column and row editing
+   - M-<LEFT> (org-table-move-column-left)
+     M-<RIGHT> (org-table-move-column-right)
+     Move the current column
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - M-S-<LEFT> (org-table-delete-column)
+     Delete the current column
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - M-S-<RIGHT> (org-table-insert-column)
+     Insert a new column to the left of the cursor
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - M-<UP> (org-table-move-row-up)
+   - M-<DOWN> (org-table-move-row-down)
+     Move the current row up or down
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - M-S-<UP> (org-table-kill-row)
+     Kill the current row or horizontal line.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - M-S-<DOWN> (org-table-insert-row)
+     Insert a new row above the current row
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - C-c - (org-table-insert-hline)
+     Insert a horizontal line below the current row.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - C-c <RET> (org-table-hline-and-move)
+     Insert a horizontal line below the current row and move cursor into the row below that line.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     :END:
+   - C-c ^ (org-table-sort-lines)
+** Copy/Cut & Paste
+   - C-c C-x M-w (org-table-copy-region)
+     Copy a rectangular region from a table to a special clipboard. Point & mark defines the edge fields.
+     If there is no active region, the current field is copied
+     There is no clue that the copy works until you attempt to paste it.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     | D2     | D3           | D5     |
+     | D3     | D4           | D4     |
+     | D4     | D5           | D3     |
+     | D5     | D6           | D2     |
+     | D6     | D7           | D1     |
+     :END:
+   - C-c C-x C-w (org-table-cut-region
+     Same as above, but cut instead of copy.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     | Data 1 | Data 2dsadda | Data 3 |
+     | D2     | D3           | D5     |
+     | D3     | D4           | D4     |
+     | D4     | D5           | D3     |
+     | D5     | D6           | D2     |
+     | D6     | D7           | D1     |
+     :END:
+   - C-c C-x C-y (org-table-paste-rectangle
+     Paste into a table. A table frame has to be present. All involved fields will be overwriten.
+     If you have copied or cut in the above example, you can attempt to paste in the following tables.
+     Note that if the table is not big enough, it will be resized.
+     :TRYME:
+     | FIELD1 | FIELD2       | FIELD3 |
+     |        |              |        |
+     :END:
+** Calculations
+   - C-c + (org-table-sum)
+     Sum the numbers in the current column, or in the rectangle defined by an active region.
+     The results are show in the echo area and can be inserted with C-y
+     :TRYME:
+     | FIELD1 |       FIELD2 | FIELD3 |
+     |      1 | Data 2dsadda | Data 3 |
+     |      2 |            3 | D5     |
+     |      3 |            4 | D4     |
+     |      4 |            5 | D3     |
+     |      5 |            6 | D2     |
+     |      6 |            7 | D1     |
+     |        |              |        |
+
+     :END:
+
+   - S-<RET> (org-table-copy-down)
+     When the current field is empty, copy from first non-empty field above.
+     When not empty, copy current field down to next row and move cursor along.
+     Depending on org-table-copy-increment, integer fields will be incremented during copy. Integers that are too large will not be.
+     Play around below to see different behavior.
+     :TRYME:
+     | FIELD1 | FIELD2 | FIELD3 |
+     |      1 |        | Data 3 |
+     |      2 |      3 | D5     |
+     |      3 |      4 | D4     |
+     |      4 |      5 | D3     |
+     |      5 |      6 | D2     |
+     |      6 |      7 | D1     |
+     :END:
+** Other keybinding
+   - C-c ` (org-table-edit-field)
+     Edit current field in a new buffer. This is useful when the field is not fully visible.
+   - C-u Cc `
+     Same as above, but edit field in place, making it all visible.
+     :TRYME:
+     Column and alignment will be visited later. But you can see below I have made the 2nd column too short to allow you to practice now.
+     | FIELD1 | FIELD2 | FIELD3 |
+     | Data 1 | <4>  | Data 3 |
+     | D2     | This is too long to be fully visible | D5     |
+     | D3     | D4   | D4     |
+     | D4     | D5   | D3     |
+     | D5     | D6   | D2     |
+     | D6     | D7   | D1     |
+     
+    :END:
+   - M-x org-table-import <RET> ## This is a command that needs to be typed.
+     Import a file as a table. File should be TAB or whitespace separated.
+   - C-c | (org-table-create-or-convert-from-region)
+     This will convert an active region to a table. This was seen in a previous header.
+   - M-x org-table-export <RET>
+     Export the table as a TAB separated file.
+     Format can be configured in the option org-table-export-default-format.
+     Properties (We will see this later) TABLE_EXPORT_FILE & TABLE_EXPORT_FORMAT can be used to specify the file name and format.
+** Column width and alignment.
+   Org, automatically adjust column size, but sometime you want to specify yourself a width for any given column
+   To do so, 1 field anywhere in a column that contains only <N>, N being the width of the column in character.
+   In this case, when the content is biger then the field, is will have => at the end
+   :TRYME:
+     You have a row that I have reserved to set column width, practice.
+     | FIELD1      | FIELD2    | FIELD3            |
+     |-------------+-----------+-------------------|
+     |             |           |                   |
+     | D2dsasadsad | D3        | D5                |
+     | D3          | D4dsadsad | D4                |
+     | D4          | D5        | dsadsadsadsadasD3 |
+     | D5          | D6        | D2                |
+     | D6          | D7        | D1                |
+    :END:
+
+   When you open a file with tables containing narrowed column, the character hiding has not yet happen and the table needs to be aligned before it looks good.
+   Setting the option org-startup-align-all-tables will to that automatically everytime for everyfile, but can slowdown startup.
+   You can specify this option on a per-file basis, which is prefered.
+   #+STARTUP: align
+   #+STARTUP: noalign
+** The spreadsheet
+   The table editor uses Emacs calc package to implement spreadsheet like capabilities.
+   While full featured, Org's spreadsheet is not identical to other spreadsheet.
+   Org knows the concept of a column formula that will be applied to all non-header fields in a column with having to copy it.
+   There is also a formula debugger and a formula editor. This editor can highlight fields in the table.
+
+*** References
+    To compute fields in the table from other fields formulas uses reference. Org fields can be referenced by name, absolute coordinates or relative coord.
+    To find the coord of a field, press C-c ? in that field.
+    You can also press C-c } to toggle the grid display.
+
+**** Field references
+     You can reference the value of another field in 2 ways.
+     1 - Like any other spreadsheet, you canuse Letter/Numbers combination
