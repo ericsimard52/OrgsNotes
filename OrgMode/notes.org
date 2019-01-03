@@ -90,7 +90,7 @@
     M-x set-variable <RET> org-catch-invisible-edits <RET> {nil,error,show,show-and-error,smart}
     Press C-x 1 when done with the docstring. This will remove the split.
 ** Motion
-   Org provides many key binding to move around headers:
+   Org provides key binding to move around headers:
    C-c C-n (org-next-visible-heading)
    C-c C-p (org-previous-visible-heading)
    C-c C-f (org-forward-same-level)
@@ -115,93 +115,108 @@
    | 0-9   | Digit argument                    |
    | q     | Quit                              |
 
+
+
 ** Structure editing
-   M-<RET> (org-meta-return)
-   Insert a new heading, item or row.
-   If the cursor is at begginning of line AND there is a heading or a plain list item (To be seen soon) at point, the new heading/item is created before the current line.
-   When used at the beggining of a regular line of text, it turns that line into a heading.
-   When the command with a C-u prefix, it always insert a new heading at the end of the current subtree. (Try it now)
-   With a double C-u the new heading is created at the end of the parent subtree. (Try it now)
+   - M-<RET> (org-meta-return)
+     Insert a new heading, item or row.
+     If the cursor is at begginning of line AND there is a heading or a plain list item at point, the new heading/item is created before the current line.
+     When used at the beggining of a regular line of text, it turns that line into a heading.
+     When the command with a C-u prefix, it always insert a new heading at the end of the current subtree. (Try it now)
+     With a double C-u the new heading is created at the end of the parent subtree. (Try it now)
 
-*** TRYME
-    The previous TRYME that you have seen were drawers, heading do not fit into drawers, so I use a sub header.
-    Point your cursor at this line and pres M-<RET>
-    Try placing your cursor at different point in any line and press M-<RET>
-**** Same with this line, try placing your cursor at the beginning of line.
+   - C-<RET> (org-insert-heading-respect-content)
+     Insert a new heading at the end of the current subtree.
 
+   - M-S-<RET> (org-insert-todo-heading)
+     Insert a new TODO item with the same level as the current heading.
+     If used while on a line of regular text, the content from cursor to end of line will be placed in the new TODO item.
+     When used in a plain list item, the behavior is a little different.
+     When at the beginning of a plain list item, it create a new item with a checkbox above the current item.
+     When call while on a line of text inside a plain list tree, it creates a new checkbox item below current one with the text from cursor on.
 
-*** Structure editing Key binding
-    To allow for proper visibility cycling, I added a header here so that TRYME does not fold the information below.
-    - C-<RET> (org-insert-heading-respect-content)
-      Insert a new heading at the end of the current subtree.
-    - M-S-<RET> (org-insert-todo-heading)
-      Insert a new TODO item with the same level as the current heading.
-      If used while on a line of regular text, the content from cursor to end of line will be placed in the new TODO item.
-    - C-S<RET> (org-insert-todo-heading-respect-content)
-      Very similar to M-S-<RET>, but will not used line content.
-    - <TAB> (org-cycle)
-      In a new header entry with no text yet, this key will cycle level from same, child, parent and so on
-    - M-<LEFT> (org-do-promote)
-      Promote current heading by one level
-    - M-<RIGHT> (org-do-demote)
-      Demote current heading by one level
-    - M-S-<LEFT> (org-promote-subtree)
-      Promote current subtree by one level
-    - M-S-<RIGHT> (org-demote-subtree)
-      Demote current subtree by one level
-    - M-<UP> (org-move-subtree-up)
-      Move subtree up (swap with previous subtree of the same level)
-    - M-<DOWN> (org-move-subtree-down)
-      Move subtree down (swap with next subtree of the same level)
-    - M-h (org-mark-element)
-      Mark the element at point. Hitting it more will mark subsequent items.
-    - C-c @ (org-mark-subtree)
-      Mark subtree at point. Hitting it more will mark subsequent items.
-    - C-c C-x C-w (org-cut-subtree)
-      Kill subtree and save it to kill ring. With a integer prefix N, kill N sequential subtrees
-    - C-c C-x M-w (org-copy-subtree)
-      Copy subtree to kill ring. With a integer prefix N, kill N sequential subtrees
-    - C-c C-x C-y (org-paste-subtree)
-      Yank subtree. This does modify the level of the subtree to make sure the tree fits in its new position.
-      The Yank level can also be specified with a numeric prefix or by yanking with a headline marker (***)
-    - C-y (org-yank)
-      Depending on the options org-yank-adjusted-subtrees and org-yank-folded-subtrees will paste the subtree using the same command as C-c C-x C-y.
-      With the default settings, no level adjustment will be done, but the yanked tree will be folded, UNLESS doing so would swallow text previously visible.
-      Any prefix argument to this command will force a normal yank to be executed with the prefix passed along.
-    - C-c C-x c (org-clone-subtree-with-time-shift)
-      Clone a subtree by making a number of sibling copies. You will be asked how many copies to make.
-      You can also specify if any timestamps in the entry should be shifed.
-    - C-c ^ (org-sort)
-      Sort same level entries. When there is an active region, all entries in the region are sorted.
-      Otherwise, the children of the current headlines are sorted.
-      You will be ask for the sorting method. Valid options include:
-      - alphabetically
-      - numerically
-      - by time
-      - priority
-      - TODO keyword
-      - Value of a property
-      With C-u prefix, sorting will be case-sensitive.
-    - C-x n s (org-narrow-to-subtree)
-      Narrow buffer to current subtree
-    - C-x n b (org-narrow-to-block)
-      Narrow buffer to current block
-    - C-x n w (widen)
-      Remove narrowing
-    - C-c * (org-toggle-heading)
-      Turn a normal line or plain list item into a heading, it will become a subheading at its current location.
-      also turn headline to normal by removing *
-      With active region, turns all line into headlines.
-      If first line in active region is item, turns only item lines into headlines.
-      And last, if first line in region is headline, remove all headlines from region.
+   - C-S<RET> (org-insert-todo-heading-respect-content)
+     Very similar to M-S-<RET>, but will not used line content.
+     It does not show a different behavior when used in a plain list tree.
+
+   - <TAB> (org-cycle)
+     In a new header entry with no text yet, this key will cycle level from same, child, parent and so on
+
+   - M-<LEFT> (org-do-promote)
+   - M-<RIGHT> (org-do-demote)
+     Promote/Demote current heading by one level
+
+   - M-S-<LEFT> (org-promote-subtree)
+     Promote current subtree by one level
+
+   - M-S-<RIGHT> (org-demote-subtree)
+     Demote current subtree by one level
+
+   - M-<UP> (org-move-subtree-up)
+     Move subtree up (swap with previous subtree of the same level)
+
+   - M-<DOWN> (org-move-subtree-down)
+     Move subtree down (swap with next subtree of the same level)
+
+   - M-h (org-mark-element)
+     Mark the element at point. Hitting it more will mark subsequent items.
+
+   - C-c @ (org-mark-subtree)
+     Mark subtree at point. Hitting it more will mark subsequent items.
+
+   - C-c C-x C-w (org-cut-subtree)
+     Kill subtree and save it to kill ring. With a integer prefix N, kill N sequential subtrees
+
+   - C-c C-x M-w (org-copy-subtree)
+     Copy subtree to kill ring. With a integer prefix N, kill N sequential subtrees
+
+   - C-c C-x C-y (org-paste-subtree)
+     Yank subtree. This does modify the level of the subtree to make sure the tree fits in its new position.
+     The Yank level can also be specified with a numeric prefix or by yanking with a headline marker (***)
+
+   - C-y (org-yank)
+     Depending on the options org-yank-adjusted-subtrees and org-yank-folded-subtrees will paste the subtree using the same command as C-c C-x C-y.
+     With the default settings, no level adjustment will be done, but the yanked tree will be folded, UNLESS doing so would swallow text previously visible.
+     Any prefix argument to this command will force a normal yank to be executed with the prefix passed along.
+
+   - C-c C-x c (org-clone-subtree-with-time-shift)
+     Clone a subtree by making a number of sibling copies. You will be asked how many copies to make.
+
+   - C-c ^ (org-sort)
+     Sort same level entries. When there is an active region, all entries in the region are sorted.
+     Otherwise, the children of the current headlines are sorted.
+     You will be ask for the sorting method. Valid options include:
+     - alphabetically
+     - numerically
+     - by time
+     - priority
+     - TODO keyword
+     - Value of a property
+     With C-u prefix, sorting will be case-sensitive.
+
+   - C-x n s (org-narrow-to-subtree)
+     Narrow buffer to current subtree
+
+   - C-x n b (org-narrow-to-block)
+     Narrow buffer to current block
+
+   - C-x n w (widen)
+     Remove narrowing
+
+   - C-c * (org-toggle-heading)
+     Turn a normal line or plain list item into a heading, it will become a subheading at its current location.
+     also turn headline to normal by removing *
+     With active region, turns all line into headlines.
+     If first line in active region is item, turns only item lines into headlines.
+     And last, if first line in region is headline, remove all headlines from region.
 
 
 *** Practice Section
-  A good way to practice here is to narrow buffer to subtree (C-x n s) while the cursor is inside Practice Section
-  When done, remove narrowing with C-x n w
-  The LIST Drawer contains a shorter version of the key binding list above. It will still be visible after narrowing
+    A good way to practice here is to narrow buffer to subtree (C-x n s) while the cursor is inside Practice Section
+    When done, remove narrowing with C-x n w
+    The LIST Drawer contains a shorter version of the key binding list above. It will still be visible after narrowing
 
-  :LIST:
+    :LIST:
     | C-<RET>     | (org-insert-heading-respect-content)      |
     | M-S-<RET>   | (org-insert-todo-heading)                 |
     | C-S<RET>    | (org-insert-todo-heading-respect-content) |
@@ -226,7 +241,8 @@
     | C-c *       | (org-toggle-heading)                      |
     :END:
 
-** Sparse tree (Matches embedded in context)
+
+** Sparse tree
    Org mode is able to construct sparse trees for selected information in an outline tree so that the entire document is folded as much as possible,
    but the selected information is visible along with the headlines structure above it.
    Org has several commands for creating those trees.
@@ -237,7 +253,7 @@
      If match is in headline, the headline is made visible.
      If match i sin body, headline and body is made visible.
    - M-g n OR M-g M-n (next-error)
-     Jump to next sparse tree atch in current buffer
+     Jump to next sparse tree match in current buffer
    - M-g p OR M-g M-p (previous-error)
      Jump to previous.
 
@@ -250,50 +266,15 @@
    3. Description lists
 
 *** Creating lists
-   To create a list, enter the first line manually, from there, press M-<RET> to create a new list entry
-   Pressing <TAB> and S-<TAB> will indent and move back the list.
+    To create a list, enter the first line manually, from there, press M-<RET> to create a new list entry
+    Pressing <TAB> and S-<TAB> will indent and move back the list.
 
-*** Moving around lists and move list around
-    The following key binding can help move around lists and move the list around
-    * S-<UP>
-    * S-<DOWN>
-      Jump to previous/next item in current list.
-      If this does not work, more then likely org-support-shift-select is on, turn it off.
-    * M-<UP>
-    * M-<DOWN>
-      Move current item including subitem up or down.
-      This swaps the item of same indentation.
-    * M-<LEFT>
-    * M-<RIGHT
-      Decrease/increase indentation of an item. Does not change children.
-    * M-S-<LEFT>
-    * M-S-<RIGHT>
-      Decrease/increase indentation and also that of subitems.
-      Using this on the very first item of a list will move the whole list.
-    * C-c C-c
-      If there is a checkbox, toggle its state.
-      In any case verify bullet and indentation consistency in the whole list.
-    * C-c -
-      Cycle the entire list level.
-      If there is an active region all lines in the region are converted to list.
-      If the first item of the region is a list item, all item marker will be removed in the region.
-      Even without an active region, a normal line will be converted to item list.
-    * C-c *
-      Turn a plain list item into a headline
-    * C-c C-*
-      Turn the whole plain list into a subtree of the current heading.
-      Checkbox will become todo
-    * S-<LEFT>
-    * S-<RIGHT>
-      Cycle through the list of bullets for the current list.
-    * C-c ^
-      Sort the plain list. you will be prompt for the method.
 *** List details
     Ordered Lists
     They start with a number followed by . or )
-    If you want to start a list with a different value the 1, start the text with [@N], example:
+    If you want to start a list with a different value then 1, start the text with [@N], example:
     3. [@3]hello <<-- start list at 3
-    4.
+
 
     To create such a list enter the text as followed:
     I placed the text inside quotes to prevent org from applying the list number
@@ -304,6 +285,42 @@
 
     Description list
     They are unordered list that contain :: to separate term and description
+
+*** Moving around lists and move list around
+    The following key binding can help move around lists and move the list around
+    - S-<UP>
+    - S-<DOWN>
+      Jump to previous/next item in current list.
+      If this does not work, more then likely org-support-shift-select is on, turn it off.
+    - M-<UP>
+    - M-<DOWN>
+      Move current item including subitem up or down.
+      This swaps the item of same indentation.
+    - M-<LEFT>
+    - M-<RIGHT
+      Decrease/increase indentation of an item. Does not change children.
+    - M-S-<LEFT>
+    - M-S-<RIGHT>
+      Decrease/increase indentation and also that of subitems.
+      Using this on the very first item of a list will move the whole list.
+    - C-c C-c
+      If there is a checkbox, toggle its state.
+      In any case verify bullet and indentation consistency in the whole list.
+    - C-c -
+      Cycle the entire list level.
+      If there is an active region all lines in the region are converted to list.
+      If the first item of the region is a list item, all item marker will be removed in the region.
+      Even without an active region, a normal line will be converted to item list.
+    - C-c *
+      Turn a plain list item into a headline
+    - C-c C-*
+      Turn the whole plain list into a subtree of the current heading.
+      Checkbox will become todo
+    - S-<LEFT>
+    - S-<RIGHT>
+      Cycle through the list of bullets for the current list.
+    - C-c ^
+      Sort the plain list. you will be prompt for the method.
 
 *** Practice Area
     :KeyBinding:
@@ -358,6 +375,8 @@
     - Key :: M-<RET> Created the skeleton of this line ( -   ::  )
 
 ** Drawers
+   - Note taken on [2019-01-01 Tue 13:22] \\
+     My note of today
    - Note taken on [2018-12-30 Sun 13:06] \\
      My note
    You have seen those in this document.
@@ -376,10 +395,40 @@
 
 ** Blocks
    Org mode uses BEGIN...END blocks a lot, they will be seen soon. These blocks can be folded and unfolded like other items.
-   To hide all block, M-x <RET> org-hide-block-startup. This command is not bound to any key by default.
+   To hide all block, M-x org-hide-block-startup. This command is not bound to any key by default.
    You control block visibility at startup, adjust org-hide-block-startup or use the following on a per-file basis:
    #+STARTUP: nohideblocks
    #+STARTUP: hideblocks
+
+   Blocks struture:
+   #+BEGIN_WHATEVER
+   Content
+
+   #+END_WHATEVER
+
+*** Easy template
+    Org can auto create the block on some predefined template.
+    To use this, on a empty line enter <N <TAB>
+    N represent one of the template below
+
+    :PreDefinedTemplate:
+    - s #+BEGIN_SRC ... #+END_SRC
+    - e #+BEGIN_EXAMPLE ... #+END_EXAMPLE
+    - q #+BEGIN_QUOTE ... #+END_QUOTE
+    - v #+BEGIN_VERSE ... #+END_VERSE
+    - c #+BEGIN_CENTER ... #+END_CENTER
+    - C #+BEGIN_COMMENT ... #+END_COMMENT
+    - l #+BEGIN_EXPORT latex ... #+END_EXPORT
+    - L #+LATEX:
+    - h #+BEGIN_EXPORT html ... #+END_EXPORT
+    - H #+HTML:
+    - a #+BEGIN_EXPORT ascii ... #+END_EXPORT
+    - A #+ASCII:
+    - i #+INDEX: line
+    - I #+INCLUDE: line
+    :END:
+    
+    Depending on the block, some extra feature are available. Those will be seen more later when we talk about programming with org.
 
 ** Footnotes [fn:1] <-- This is how you place the marker anywhere on a text
    Yes, org support footnotes[fn:2] <-- with cursor on a footnote, press C-c C-c to go to the footnote
@@ -400,6 +449,7 @@
 
     C-c '
     Edit the corresponding footnote definition at point in a separate window.
+
 
 
 * Tables
@@ -707,8 +757,6 @@
      Empty field range are usually suppressed.
 
 
-* Hyperlinks
-  
 * Footnotes
 
 [fn:name] This is a name reference, multiple marker can reference the same footnote
@@ -716,6 +764,3 @@
 [fn:2] I press C-c C-c on the above marker to create this section.
 
 [fn:1] This is a footnote
-
-
-
